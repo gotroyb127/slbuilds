@@ -1209,7 +1209,7 @@ monocle(Monitor *m)
 	unsigned int n = 0;
 	Client *c;
 
-	if (m->sellt != 3) {/* do not update layout symbols when called by centeredmonocle */
+	if (m->sellt != &centeredmonocle) {/* do not update layout symbols when called by centeredmonocle */
 		for (c = m->clients; c; c = c->next)
 			if (ISVISIBLE(c))
 				n++;

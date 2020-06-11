@@ -5,8 +5,8 @@ static const unsigned int borderpx  = 3;        /* border pixel of windows */
 static const unsigned int snap      = 15;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Fira Code:style=Bold:size=7.5" };
-static const char dmenufont[]       = "Fira Code:style=Bold:size=7.5";
+static const char *fonts[]          = { "Fira Code Medium:size=9" };
+static const char dmenufont[]       = "Fira Code Medium:size=9";
 static const char col_gray0[]       = "#000000";
 static const char col_gray1[]       = "#111111";
 static const char col_gray2[]       = "#444444";
@@ -43,7 +43,7 @@ static const Rule rules[] = {
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
 static const int dirs[3]      = { DirHor, DirVer, DirVer }; /* tiling dirs */
 static const int nmaster     = 1;    /* number of clients in master area */
-static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
+static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
 static const float scalefactorx = 0.65, scalefactory = 0.0; /* for centeredmonocle
 	useful when positive
 	they control the scaling between mfact and the gaps in the centered modes
@@ -83,7 +83,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY|ControlMask,           XK_Return, spawn,          SHCMD("tmux has 2> /dev/null && st -e tmux attach") },
 //	{ MODKEY|MODKEY2,               XK_c,      spawn,          SHCMD("st -e tmux new lf") },
-	{ MODKEY|MODKEY2,               XK_c,      spawn,          SHCMD("st -e tmux & sleep .2 && xdotool key --clearmodifiers Alt+c") },
+	{ MODKEY|MODKEY2,               XK_c,      spawn,          SHCMD("st -e tmux & sleep .35 && xdotool key --clearmodifiers Alt+c") },
 	{ MODKEY2,                     XK_Shift_L, spawn,          SHCMD("pkill -RTMIN+3 dwmblocks") },
 	{ MODKEY2,                     XK_Shift_R, spawn,          SHCMD("pkill -RTMIN+3 dwmblocks") },
 	{ MODKEY,                       XK_Home,   spawn,          SHCMD("pkill -RTMIN+6 dwmblocks") },
