@@ -41,7 +41,7 @@ static const Rule rules[] = {
 
 /* layout(s) */
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
-static const int dirs[3]      = { DirHor, DirVer, DirVer }; /* tiling dirs */
+static const int dirs[3]     = { DirHor, DirVer, DirVer }; /* tiling dirs */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
 static const float scalefactorx = 0.65, scalefactory = 0.0; /* for centeredmonocle
@@ -51,11 +51,11 @@ static const float scalefactorx = 0.65, scalefactory = 0.0; /* for centeredmonoc
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
+	{ "<||",      tile },    /* first entry is default */
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
 	{ "<M>",      centeredmonocle },
-	{ "|M|",      centeredmaster },
+	{ "<||>",     centeredmaster },
 };
 
 /* key definitions */
@@ -75,15 +75,14 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-p", " ", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray0, "-nf", "#888888", "-sb", col_gray0, "-sf", col_gray5, NULL };
-static const char *termcmd[]  = { "st", "-e", "tmux", NULL };
+static const char *termcmd[]  = { "st", "tmux", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY|ControlMask,           XK_Return, spawn,          SHCMD("tmux has 2> /dev/null && st -e tmux attach") },
-//	{ MODKEY|MODKEY2,               XK_c,      spawn,          SHCMD("st -e tmux new lf") },
-	{ MODKEY|MODKEY2,               XK_c,      spawn,          SHCMD("st -e tmux & sleep .35 && xdotool key --clearmodifiers Alt+c") },
+	{ MODKEY|ControlMask,           XK_Return, spawn,          SHCMD("tmux has 2> /dev/null && st tmux attach") },
+	{ MODKEY|MODKEY2,               XK_c,      spawn,          SHCMD("st tmux new $SHELL -ic lf") },
 	{ MODKEY2,                     XK_Shift_L, spawn,          SHCMD("pkill -RTMIN+3 dwmblocks") },
 	{ MODKEY2,                     XK_Shift_R, spawn,          SHCMD("pkill -RTMIN+3 dwmblocks") },
 	{ MODKEY,                       XK_Home,   spawn,          SHCMD("pkill -RTMIN+6 dwmblocks") },
@@ -108,15 +107,17 @@ static Key keys[] = {
 	{ MODKEY|ControlMask,     XK_bracketleft,  spawn,          SHCMD("Player.sh speed- 0.01  && pkill -RTMIN+5 dwmblocks") },
 	{ MODKEY|ShiftMask,       XK_bracketleft,  spawn,          SHCMD("Player.sh speed- 0.05  && pkill -RTMIN+5 dwmblocks") },
 	{ MODKEY,                 XK_bracketleft,  spawn,          SHCMD("Player.sh speed- 0.1   && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY,                       XK_equal,  spawn,          SHCMD("Player.sh speed1       && pkill -RTMIN+5 dwmblocks") },
+	{ MODKEY,                       XK_equal,  spawn,          SHCMD("Player.sh speed  1     && pkill -RTMIN+5 dwmblocks") },
 	{ MODKEY,                 XK_bracketright, spawn,          SHCMD("Player.sh speed+ 0.1   && pkill -RTMIN+5 dwmblocks") },
 	{ MODKEY|ShiftMask,       XK_bracketright, spawn,          SHCMD("Player.sh speed+ 0.05  && pkill -RTMIN+5 dwmblocks") },
 	{ MODKEY|ControlMask,     XK_bracketright, spawn,          SHCMD("Player.sh speed+ 0.01  && pkill -RTMIN+5 dwmblocks") },
 	{ MODKEY,                       XK_minus,  spawn,          SHCMD("Player.sh loop         && pkill -RTMIN+5 dwmblocks") },
 	{ MODKEY|ShiftMask,             XK_minus,  spawn,          SHCMD("Player.sh position     && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_equal,  spawn,          SHCMD("Player.sh quit         && pkill -RTMIN+5 dwmblocks") },
+	{ MODKEY|ControlMask,           XK_minus,  spawn,          SHCMD("Player.sh pause-after1 && pkill -RTMIN+5 dwmblocks") },
+	{ MODKEY|ShiftMask,             XK_equal,  spawn,          SHCMD("Player.sh quit-wl      && pkill -RTMIN+5 dwmblocks") },
 	{ MODKEY,                       XK_v,      spawn,          SHCMD("clipmenu -l 50") },
 	{ MODKEY|MODKEY2,               XK_m,      spawn,          SHCMD("Music.sh") },
+	{ MODKEY|MODKEY2,               XK_g,      spawn,          SHCMD("gsimplecal") },
 	{ MODKEY|MODKEY2,               XK_s,      spawn,          SHCMD("firefox-developer-edition") },
 	{ MODKEY|MODKEY2,               XK_a,      spawn,          SHCMD("firefox-developer-edition -P") },
 	{ MODKEY|MODKEY2,               XK_d,      spawn,          SHCMD("firefox-developer-edition -P 1Private") },

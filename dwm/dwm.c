@@ -1209,13 +1209,11 @@ monocle(Monitor *m)
 	unsigned int n = 0;
 	Client *c;
 
-	if (m->sellt != &centeredmonocle) {/* do not update layout symbols when called by centeredmonocle */
-		for (c = m->clients; c; c = c->next)
-			if (ISVISIBLE(c))
-				n++;
-		if (n > 0) /* override layout symbol */
-			snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
-	}
+	for (c = m->clients; c; c = c->next)
+		if (ISVISIBLE(c))
+			n++;
+	if (n > 0) /* override layout symbol */
+		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
 	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
 		resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
 }
@@ -1827,7 +1825,7 @@ tagmon(const Arg *arg)
 void
 tile(Monitor *m)
 {
-	unsigned int i, n, h, w, ms, ss, ma_n, sa_n;
+	unsigned int i, n, ms, ss, ma_n, sa_n;
 	Client *c;
 	Area *ga = m->pertag->areas[m->pertag->curtag], *ma = ga + 1, *sa = ga + 2;
 	float f;

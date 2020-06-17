@@ -94,6 +94,7 @@ void
 drw_free(Drw *drw)
 {
 	XFreePixmap(drw->dpy, drw->drawable);
+	drw_fontset_free(drw->fonts);
 	XFreeGC(drw->dpy, drw->gc);
 	free(drw);
 }
