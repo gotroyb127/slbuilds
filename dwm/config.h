@@ -6,6 +6,7 @@ static const unsigned int snap      = 15;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
 static const char *fonts[]          = { "Fira Code Medium:size=9" };
+//static const char *fonts[]          = { "Fira Code Medium:size=12" };
 static const char dmenufont[]       = "Fira Code Medium:size=9";
 static const char col_gray0[]       = "#000000";
 static const char col_gray1[]       = "#111111";
@@ -18,10 +19,10 @@ static const char col_SelTag[]      = "#333333"; /* Selected Tag */
 static const char col_cyan[]        = "#005577";
 static const char *colors[][3]      = {
 	/*                  fg         bg          border   */
-	[SchemeNorm]    = { col_gray0, col_gray1,  col_gray2 },  /* only border affects(?) */
+	[SchemeNorm]    = { col_gray0, col_gray1,  col_gray2 }, /* only border affects(?) */
 	[SchemeSel]     = { col_gray0, col_SelCl,  col_SelCl }, /* only border affects(?) */
 	[SchemeStatus]  = { "#cccccc", col_gray0,  col_gray0 }, // Statusbar right            {text,background,not used but cannot be empty}
-	[SchemeTagsSel] = { col_gray5, col_gray0,  col_gray0 }, // Tagbar left selected       {text,background,not used but cannot be empty}
+	[SchemeTagsSel] = { col_gray4, col_gray0,  col_gray0 }, // Tagbar left selected       {text,background,not used but cannot be empty}
        [SchemeTagsNorm] = { col_gray3, col_gray0,  col_gray0 }, // Tagbar left unselected     {text,background,not used but cannot be empty}
        [SchemeInfoSel]  = { col_gray5, col_gray0,  col_gray0 }, // infobar middle selected    {text,background,not used but cannot be empty}
        [SchemeInfoNorm] = { col_gray3, col_gray0,  col_gray0 }, // infobar middle  unselected {text,background,not used but cannot be empty}
@@ -83,38 +84,38 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY|ControlMask,           XK_Return, spawn,          SHCMD("tmux has 2> /dev/null && st tmux attach") },
 	{ MODKEY|MODKEY2,               XK_c,      spawn,          SHCMD("st tmux new $SHELL -ic lf") },
-	{ MODKEY2,                     XK_Shift_L, spawn,          SHCMD("pkill -RTMIN+3 dwmblocks") },
-	{ MODKEY2,                     XK_Shift_R, spawn,          SHCMD("pkill -RTMIN+3 dwmblocks") },
-	{ MODKEY,                       XK_Home,   spawn,          SHCMD("pkill -RTMIN+6 dwmblocks") },
+	{ MODKEY2,                     XK_Shift_L, spawn,          SHCMD("pkill -$((31-2)) dwmblocks") },
+	{ MODKEY2,                     XK_Shift_R, spawn,          SHCMD("pkill -$((31-2)) dwmblocks") },
+	{ MODKEY,                       XK_Home,   spawn,          SHCMD("pkill -$((31-5)) dwmblocks") },
 	{ MODKEY|MODKEY2,               XK_F4,     spawn,          SHCMD("~/.local/scripts/PowerOptions.sh") },
-	{ MODKEY,                       XK_F5,     spawn,          SHCMD("amixer -M set Capture toggle && pkill -RTMIN+4 dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_F6,     spawn,          SHCMD("amixer -M set Master 15%-    && pkill -RTMIN+4 dwmblocks") },
-	{ MODKEY,                       XK_F6,     spawn,          SHCMD("amixer -M set Master 5%-     && pkill -RTMIN+4 dwmblocks") },
-	{ MODKEY|ControlMask,           XK_F6,     spawn,          SHCMD("amixer -M set Master 1%-     && pkill -RTMIN+4 dwmblocks") },
-	{ MODKEY,                       XK_F7,     spawn,          SHCMD("amixer -M set Master toggle  && pkill -RTMIN+4 dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_F7,     spawn,          SHCMD("amixer -M set Master 70%     && pkill -RTMIN+4 dwmblocks") },
-	{ MODKEY|ControlMask,           XK_F7,     spawn,          SHCMD("amixer -M set Master 35%     && pkill -RTMIN+4 dwmblocks") },
-	{ MODKEY|ControlMask,           XK_F8,     spawn,          SHCMD("amixer -M set Master 1%+     && pkill -RTMIN+4 dwmblocks") },
-	{ MODKEY,                       XK_F8,     spawn,          SHCMD("amixer -M set Master 5%+     && pkill -RTMIN+4 dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_F8,     spawn,          SHCMD("amixer -M set Master 15%+    && pkill -RTMIN+4 dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_F9,     spawn,          SHCMD("Player.sh previous     && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY|ControlMask,           XK_F9,     spawn,          SHCMD("Player.sh position- 60 && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY,                       XK_F9,     spawn,          SHCMD("Player.sh position- 5  && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY,                       XK_F10,    spawn,          SHCMD("Player.sh play-pause   && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY,                       XK_F11,    spawn,          SHCMD("Player.sh position+ 5  && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY|ControlMask,           XK_F11,    spawn,          SHCMD("Player.sh position+ 60 && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_F11,    spawn,          SHCMD("Player.sh next         && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY|ControlMask,     XK_bracketleft,  spawn,          SHCMD("Player.sh speed- 0.01  && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY|ShiftMask,       XK_bracketleft,  spawn,          SHCMD("Player.sh speed- 0.05  && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY,                 XK_bracketleft,  spawn,          SHCMD("Player.sh speed- 0.1   && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY,                       XK_equal,  spawn,          SHCMD("Player.sh speed  1     && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY,                 XK_bracketright, spawn,          SHCMD("Player.sh speed+ 0.1   && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY|ShiftMask,       XK_bracketright, spawn,          SHCMD("Player.sh speed+ 0.05  && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY|ControlMask,     XK_bracketright, spawn,          SHCMD("Player.sh speed+ 0.01  && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY,                       XK_minus,  spawn,          SHCMD("Player.sh loop         && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_minus,  spawn,          SHCMD("Player.sh position     && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY|ControlMask,           XK_minus,  spawn,          SHCMD("Player.sh pause-after1 && pkill -RTMIN+5 dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_equal,  spawn,          SHCMD("Player.sh quit-wl      && pkill -RTMIN+5 dwmblocks") },
+	{ MODKEY,                       XK_F5,     spawn,          SHCMD("amixer -M set Capture toggle && pkill -$((31-4)) dwmblocks") },
+	{ MODKEY|ShiftMask,             XK_F6,     spawn,          SHCMD("amixer -M set Master 15%-    && pkill -$((31-4)) dwmblocks") },
+	{ MODKEY,                       XK_F6,     spawn,          SHCMD("amixer -M set Master 5%-     && pkill -$((31-4)) dwmblocks") },
+	{ MODKEY|ControlMask,           XK_F6,     spawn,          SHCMD("amixer -M set Master 1%-     && pkill -$((31-4)) dwmblocks") },
+	{ MODKEY,                       XK_F7,     spawn,          SHCMD("amixer -M set Master toggle  && pkill -$((31-4)) dwmblocks") },
+	{ MODKEY|ShiftMask,             XK_F7,     spawn,          SHCMD("amixer -M set Master 70%     && pkill -$((31-4)) dwmblocks") },
+	{ MODKEY|ControlMask,           XK_F7,     spawn,          SHCMD("amixer -M set Master 35%     && pkill -$((31-4)) dwmblocks") },
+	{ MODKEY|ControlMask,           XK_F8,     spawn,          SHCMD("amixer -M set Master 1%+     && pkill -$((31-4)) dwmblocks") },
+	{ MODKEY,                       XK_F8,     spawn,          SHCMD("amixer -M set Master 5%+     && pkill -$((31-4)) dwmblocks") },
+	{ MODKEY|ShiftMask,             XK_F8,     spawn,          SHCMD("amixer -M set Master 15%+    && pkill -$((31-4)) dwmblocks") },
+	{ MODKEY|ShiftMask,             XK_F9,     spawn,          SHCMD("Player.sh previous     && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY|ControlMask,           XK_F9,     spawn,          SHCMD("Player.sh position- 60 && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY,                       XK_F9,     spawn,          SHCMD("Player.sh position- 5  && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY,                       XK_F10,    spawn,          SHCMD("Player.sh play-pause   && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY,                       XK_F11,    spawn,          SHCMD("Player.sh position+ 5  && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY|ControlMask,           XK_F11,    spawn,          SHCMD("Player.sh position+ 60 && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY|ShiftMask,             XK_F11,    spawn,          SHCMD("Player.sh next         && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY|ControlMask,     XK_bracketleft,  spawn,          SHCMD("Player.sh speed- 0.01  && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY|ShiftMask,       XK_bracketleft,  spawn,          SHCMD("Player.sh speed- 0.05  && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY,                 XK_bracketleft,  spawn,          SHCMD("Player.sh speed- 0.1   && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY,                       XK_equal,  spawn,          SHCMD("Player.sh speed  1     && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY,                 XK_bracketright, spawn,          SHCMD("Player.sh speed+ 0.1   && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY|ShiftMask,       XK_bracketright, spawn,          SHCMD("Player.sh speed+ 0.05  && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY|ControlMask,     XK_bracketright, spawn,          SHCMD("Player.sh speed+ 0.01  && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY,                       XK_minus,  spawn,          SHCMD("Player.sh loop         && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY|ShiftMask,             XK_minus,  spawn,          SHCMD("Player.sh position     && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY|ControlMask,           XK_minus,  spawn,          SHCMD("Player.sh pause-after1 && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY|ShiftMask,             XK_equal,  spawn,          SHCMD("Player.sh quit-wl      && pkill -$((31-1)) dwmblocks") },
 	{ MODKEY,                       XK_v,      spawn,          SHCMD("clipmenu -l 50") },
 	{ MODKEY|MODKEY2,               XK_m,      spawn,          SHCMD("Music.sh") },
 	{ MODKEY|MODKEY2,               XK_g,      spawn,          SHCMD("gsimplecal") },
