@@ -16,36 +16,38 @@
 #define SIGMAX     31
 #define BLKLEN     256
 #define STSLEN     512
+#define BLKN       LENGTH(blks)
 
 typedef struct {
 	char *strBefore;
 	char *cmd;
+	char *strAfter;
 	unsigned int period;
 	unsigned int sig;
 } Blk;
 
 /* function declarations */
-static void CleanQuit(int unused);
 static void InitBlkstr(void);
 static void MainLoop(void);
 static void (*Print) (void);
 static void SetOutStr(void);
 static void SetRoot(void);
-static void SetSignals(void);
 static void SigHan(int s);
+static void SigSetup(void);
 static void Sleep(const struct timespec *rqtp, struct timespec *rem);
 static void StdoutPrint(void);
 static void UpdateBlk(int i);
 static int UpdateCheck(int time);
+static void Quit(int s);
 
 /* include configuration file before variable declerations */
 #include "config.h"
 
 /* variables */
-static const int blkn = LENGTH(blks);
-static char **blkstr;
+static char blkstr[BLKN][BLKLEN];
 static unsigned int FastPrint = 0;
 static unsigned int Looping = 1;
+static unsigned int restart = 0;
 static char OutStr[STSLEN];
 static const struct timespec *T = &(struct timespec) { SEC, NSEC };
 /* X11 specific */
@@ -54,23 +56,6 @@ static Window root;
 static int screen;
 
 /* function implementations */
-void
-CleanQuit(int unused)
-{
-	Looping = 0;
-	exit(0);
-}
-
-void
-InitBlkstr()
-{
-	int i;
-
-	blkstr = (char **) malloc(blkn * (sizeof (char *)));
-	for (i = 0; i < blkn; ++i)
-		blkstr[i] = (char *) malloc(BLKLEN);
-}
-
 void
 MainLoop()
 {
@@ -102,30 +87,12 @@ SetRoot()
 }
 
 void
-SetSignals()
-{
-	int i, s;
-
-	signal(SIGINT, CleanQuit);
-	signal(SIGTERM, CleanQuit);
-	
-	for (i = 1; i < SIGMAX; ++i)
-		signal(i, SIG_IGN);
-
-	for (i = 0; i < blkn; ++i) {
-		s = TOSIG(blks[i].sig);
-		if (s != 0)
-			signal(s, SigHan);
-	}
-}
-
-void
 SigHan(int s)
 {
 //	fprintf(stderr, "SigHandling begins...\t");
 	int i, t = FROMSIG(s);
 
-	for (i = 0; i < blkn; ++i) {
+	for (i = 0; i < BLKN; ++i) {
 		if (blks[i].sig == t)
 			UpdateBlk(i);
 	}
@@ -135,9 +102,28 @@ SigHan(int s)
 }
 
 void
+SigSetup()
+{
+	int i, s;
+
+	for (i = 1; i < SIGMAX; ++i)
+		signal(i, SIG_IGN);
+
+	signal(SIGINT, Quit);
+	signal(SIGTERM, Quit);
+	signal(SIGHUP, Quit);
+
+	for (i = 0; i < BLKN; ++i) {
+		s = TOSIG(blks[i].sig);
+		if (s != 0)
+			signal(s, SigHan);
+	}
+}
+
+void
 Sleep(const struct timespec *rqtp, struct timespec *rem)
 {
-	if (nanosleep(rqtp, rem))
+	if (nanosleep(rqtp, rem) && Looping)
 		Sleep(rem, rem);
 }
 
@@ -164,7 +150,7 @@ UpdateCheck(int T)
 {
 	int i, per, U;
 
-	for (i = U = 0; i < blkn; ++i) {
+	for (i = U = 0; i < BLKN; ++i) {
 		per = blks[i].period;
 		if (per != 0 && T % per == 0 || T == 0) {
 			UpdateBlk(i);
@@ -179,8 +165,19 @@ SetOutStr()
 {
 	int i, e;
 
-	for (i = e = 0; i < blkn; ++i)
-		e += sprintf(OutStr + e, "%s%s", blks[i].strBefore, blkstr[i]);
+	for (i = e = 0; i < BLKN; ++i) {
+		e += sprintf(OutStr + e, "%s%s%s", blks[i].strBefore,
+		                                   blkstr[i],
+		                                   blks[i].strAfter);
+	}
+}
+
+void
+Quit(int s)
+{
+	Looping = 0;
+	if (s == SIGHUP)
+		restart = 1;
 }
 
 int
@@ -190,8 +187,8 @@ main(int argc, char *argv[])
 		Print = StdoutPrint;
 	else
 		Print = SetRoot;
-	InitBlkstr();
-	SetSignals();
+	SigSetup();
 	MainLoop();
+	if (restart) execvp(argv[0], argv);
 	return EXIT_SUCCESS;
 }

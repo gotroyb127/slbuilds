@@ -1,0 +1,45 @@
+--- config.def.h	2020-06-07 15:49:59.787425214 +0300
++++ config.h	2020-06-22 20:52:11.246806951 +0300
+@@ -5,9 +5,11 @@
+  *
+  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
+  */
+-static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
++static char *font = "Fira Code Medium:pixelsize=12:antialias=true:autohint=true";
++//static char *font = "Fira Code Medium:pixelsize=15:antialias=true:autohint=true";
+ /* Spare fonts */
+ static char *font2[] = {
++/*	"Source Code Pro Medium:pixelsize=12:antialias=true:autohint=true", */
+ /*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */
+ /*	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true", */
+ };
+@@ -147,8 +149,8 @@
+  * Default columns and rows numbers
+  */
+ 
+-static unsigned int cols = 80;
+-static unsigned int rows = 24;
++static unsigned int cols = 110;
++static unsigned int rows = 55;
+ 
+ /*
+  * Default colour and shape of the mouse cursor
+@@ -191,14 +193,13 @@
+ 	{ ControlMask,          XK_Print,       toggleprinter,  {.i =  0} },
+ 	{ ShiftMask,            XK_Print,       printscreen,    {.i =  0} },
+ 	{ XK_ANY_MOD,           XK_Print,       printsel,       {.i =  0} },
+-	{ TERMMOD,              XK_Prior,       zoom,           {.f = +1} },
+-	{ TERMMOD,              XK_Next,        zoom,           {.f = -1} },
+-	{ TERMMOD,              XK_Home,        zoomreset,      {.f =  0} },
+ 	{ TERMMOD,              XK_C,           clipcopy,       {.i =  0} },
+ 	{ TERMMOD,              XK_V,           clippaste,      {.i =  0} },
+-	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
+-	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
++	{ TERMMOD,              XK_P,           selpaste,       {.i =  0} },
+ 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
++	{ TERMMOD,              XK_L,           zoom,           {.f = +1} },
++	{ TERMMOD,              XK_H,           zoom,           {.f = -1} },
++	{ TERMMOD,              XK_O,           zoomreset,      {.f =  0} },
+ };
+ 
+ /*
