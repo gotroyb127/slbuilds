@@ -498,10 +498,12 @@ centeredmaster(Monitor *m)
 {
 	unsigned int i;
 	Client *c;
-	Area *ma = m->pertag->areas[m->pertag->curtag] + 1, *sal = ma + 1, tmp = *sal, *sar = &tmp;
-	
+	Area *ma = m->pertag->areas[m->pertag->curtag] + 1,
+	     *sal = ma + 1, tmp = *sal, *sar = &tmp;
+
 	ma->fact = sal->fact = sar->fact = 0;
 	ma->cx = ma->cy = sar->cx = sar->cy = sal->cx = sal->cy = 0;
+
 	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
 		if (i < m->nmaster)
 			ma->fact += c->cfact;
@@ -510,6 +512,12 @@ centeredmaster(Monitor *m)
 		else
 			sar->fact += c->cfact;
 	}
+
+	if (i == 2 && m->nmaster < 2) {
+		tile(m);
+		return;
+	}
+
 	ma->x = m->ww * ( (1 - m->mfact) / 2) , ma->fx = m->ww * (1 + m->mfact) / 2;
 	ma->y = sal->y = sar->y = 0, ma->fy = sal->fy = sar->fy = m->wh;
 	sal->x = 0, sal->fx = ma->x;
