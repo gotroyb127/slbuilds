@@ -515,6 +515,7 @@ centeredmaster(Monitor *m)
 
 	if (i == 2 && m->nmaster < 2) {
 		tile(m);
+		snprintf(m->ltsymbol, sizeof m->ltsymbol, m->lt[m->sellt]->symbol);
 		return;
 	}
 
