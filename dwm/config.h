@@ -128,7 +128,6 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Print,  spawn,          SHCMD("PrintScreen.sh window") },
 	{ MODKEY|ControlMask,           XK_p,      spawn,          SHCMD("xfce4-appfinder") },
 	{ MODKEY|ControlMask,           XK_c,      spawn,          SHCMD("xcalib -o 1 -i -a") },
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_j,      pushdown,       {0} },
@@ -157,6 +156,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY,                       XK_f,      setlayoutnobar, {.v = &layouts[2]} },
 	{ MODKEY|ShiftMask,             XK_f,      setlayoutnobar, {.v = &layouts[3]} },
+	{ MODKEY,                       XK_b,      togglebar,      {0} },
+	{ MODKEY,                       XK_u,      toggleisperm,   {0} },
 	{ MODKEY|ControlMask,           XK_f,      togglefullscr,  {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	TILEKEYS(MODKEY,                                           1, 0, 0)

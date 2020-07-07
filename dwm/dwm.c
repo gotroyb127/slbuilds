@@ -105,7 +105,7 @@ struct Client {
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
 	unsigned int tags;
-	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
+	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isperm;
 	Client *next;
 	Client *snext;
 	Monitor *mon;
@@ -238,6 +238,7 @@ static void tileclient(Monitor *m, Area *a, Client *c);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglefullscr(const Arg *arg);
+static void toggleisperm(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
@@ -440,8 +441,12 @@ arrangemon(Monitor *m)
 void
 attach(Client *c)
 {
-	c->next = c->mon->clients;
-	c->mon->clients = c;
+	Client **tc = &c->mon->clients;
+
+	if (!c->isperm)
+		for (; *tc && (*tc)->isperm; tc = &(*tc)->next);
+	c->next = *tc;
+	*tc = c;
 }
 
 void
@@ -1967,8 +1972,15 @@ togglefloating(const Arg *arg)
 void
 togglefullscr(const Arg *arg)
 {
-  if(selmon->sel)
-    setfullscreen(selmon->sel, !selmon->sel->isfullscreen);
+	if (selmon->sel)
+		setfullscreen(selmon->sel, !selmon->sel->isfullscreen);
+}
+
+void
+toggleisperm(const Arg *arg)
+{
+	if (selmon->sel)
+		selmon->sel->isperm ^= 1;
 }
 
 void
