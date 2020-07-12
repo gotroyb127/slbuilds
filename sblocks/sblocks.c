@@ -44,10 +44,11 @@ static int UpdateCheck(int time);
 
 /* variables */
 static char blkstr[BLKN][BLKLEN];
-static unsigned int Running = 1;
-static unsigned int Restart = 0;
+static int LastSignal = 0;
 static char OutStr[STSLEN];
-static const struct timespec *T = &(struct timespec) { SEC, NSEC };
+static int Restart = 0;
+static int Running = 1;
+static const struct timespec *T = &(const struct timespec) { SEC, NSEC };
 /* X11 specific */
 static Display *dpy;
 static Window root;
@@ -105,14 +106,7 @@ SetRoot(void)
 void
 SigHan(int s)
 {
-	int i, t = FROMSIG(s);
-
-	for (i = 0; i < BLKN; ++i) {
-		if (blks[i].sig == t)
-			UpdateBlk(i);
-	}
-	SetOutStr();
-	Print();
+	LastSignal = FROMSIG(s);
 }
 
 void
@@ -137,7 +131,16 @@ SigSetup(void)
 void
 Sleep(const struct timespec *rqtp, struct timespec *rem)
 {
-	if (nanosleep(rqtp, rem) && Running)
+	if (LastSignal) {
+		for (int i = 0; i < BLKN; ++i) {
+			if (blks[i].sig == LastSignal)
+				UpdateBlk(i);
+		}
+		LastSignal = 0;
+		SetOutStr();
+		Print();
+	}
+	if (Running && nanosleep(rqtp, rem))
 		Sleep(rem, rem);
 }
 

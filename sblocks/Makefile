@@ -1,7 +1,7 @@
 PREFIX ?= /usr/local
 
 output: sblocks.c config.h
-	cc `pkg-config --cflags x11` `pkg-config --libs x11` sblocks.c -o dwmblocks
+	cc -lX11 sblocks.c -o dwmblocks
 clean:
 	rm -f *.o *.gch dwmblocks
 install: output
