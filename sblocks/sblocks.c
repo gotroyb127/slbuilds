@@ -27,9 +27,9 @@ typedef struct {
 } Blk;
 
 /* function declarations */
-static void InitBlkstr(void);
-static void MainLoop(void);
 static void (*Print) (void);
+static void Quit(int s);
+static void Run(void);
 static void SetOutStr(void);
 static void SetRoot(void);
 static void SigHan(int s);
@@ -38,16 +38,14 @@ static void Sleep(const struct timespec *rqtp, struct timespec *rem);
 static void StdoutPrint(void);
 static void UpdateBlk(int i);
 static int UpdateCheck(int time);
-static void Quit(int s);
 
 /* include configuration file before variable declerations */
 #include "config.h"
 
 /* variables */
 static char blkstr[BLKN][BLKLEN];
-static unsigned int FastPrint = 0;
-static unsigned int Looping = 1;
-static unsigned int restart = 0;
+static unsigned int Running = 1;
+static unsigned int Restart = 0;
 static char OutStr[STSLEN];
 static const struct timespec *T = &(struct timespec) { SEC, NSEC };
 /* X11 specific */
@@ -57,13 +55,21 @@ static int screen;
 
 /* function implementations */
 void
-MainLoop()
+Quit(int s)
+{
+	Running = 0;
+	if (s == SIGHUP)
+		Restart = 1;
+}
+
+void
+Run(void)
 {
 	int t = -1;
 	struct timespec *rem;
 
 	rem = (struct timespec *) malloc(sizeof(struct timespec *));
-	while (Looping) {
+	while (Running) {
 		if (UpdateCheck(++t)) {
 			SetOutStr();
 			Print();
@@ -73,7 +79,18 @@ MainLoop()
 }
 
 void
-SetRoot()
+SetOutStr(void)
+{
+	int i, e;
+
+	for (i = e = 0; i < BLKN; ++i) {
+		e += sprintf(OutStr + e, "%s%s%s",
+		     blks[i].strBefore, blkstr[i], blks[i].strAfter);
+	}
+}
+
+void
+SetRoot(void)
 {
 	Display *d;
 
@@ -83,13 +100,11 @@ SetRoot()
 	root = RootWindow(dpy, screen);
 	XStoreName(dpy, root, OutStr);
 	XCloseDisplay(dpy);
-//	fprintf(stderr, "RootSet completed.\n");
 }
 
 void
 SigHan(int s)
 {
-//	fprintf(stderr, "SigHandling begins...\t");
 	int i, t = FROMSIG(s);
 
 	for (i = 0; i < BLKN; ++i) {
@@ -98,11 +113,10 @@ SigHan(int s)
 	}
 	SetOutStr();
 	Print();
-//	fprintf(stderr, "SigHandling completed.\n");
 }
 
 void
-SigSetup()
+SigSetup(void)
 {
 	int i, s;
 
@@ -123,12 +137,12 @@ SigSetup()
 void
 Sleep(const struct timespec *rqtp, struct timespec *rem)
 {
-	if (nanosleep(rqtp, rem) && Looping)
+	if (nanosleep(rqtp, rem) && Running)
 		Sleep(rem, rem);
 }
 
 void
-StdoutPrint()
+StdoutPrint(void)
 {
 	printf("%s\n", OutStr);
 }
@@ -160,26 +174,6 @@ UpdateCheck(int T)
 	return U;
 }
 
-void
-SetOutStr()
-{
-	int i, e;
-
-	for (i = e = 0; i < BLKN; ++i) {
-		e += sprintf(OutStr + e, "%s%s%s", blks[i].strBefore,
-		                                   blkstr[i],
-		                                   blks[i].strAfter);
-	}
-}
-
-void
-Quit(int s)
-{
-	Looping = 0;
-	if (s == SIGHUP)
-		restart = 1;
-}
-
 int
 main(int argc, char *argv[])
 {
@@ -188,7 +182,7 @@ main(int argc, char *argv[])
 	else
 		Print = SetRoot;
 	SigSetup();
-	MainLoop();
-	if (restart) execvp(argv[0], argv);
+	Run();
+	if (Restart) execvp(argv[0], argv);
 	return EXIT_SUCCESS;
 }
