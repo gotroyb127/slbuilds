@@ -45,7 +45,7 @@ static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] 
 static const int dirs[3]     = { DirHor, DirVer, DirVer }; /* tiling dirs */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
-static const float scalefactorx = 0.65, scalefactory = 0.0; /* for centeredmonocle
+static const float scalefactorx = 0.45, scalefactory = 0.0; /* for centeredmonocle
 	useful when positive
 	they control the scaling between mfact and the gaps in the centered modes
 	1 means linearly by mfact, 0.5 sqrt, 0.333 cubic root ... */
@@ -71,7 +71,8 @@ static const Layout layouts[] = {
 	{ MOD, XK_r, setdirs,  {.v = (int[])  { INC(G * +1),   INC(M * +1),   INC(S * +1) } } },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+#define SHCMD(cmd)        { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+#define SHCMD_SIG(N, cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd" && pkill -$((31-"N")) dwmblocks", NULL } }
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -84,38 +85,38 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY|ControlMask,           XK_Return, spawn,          SHCMD("tmux has 2> /dev/null && st tmux attach") },
 	{ MODKEY|MODKEY2,               XK_c,      spawn,          SHCMD("st tmux new $SHELL -ic lf") },
-	{ MODKEY2,                     XK_Shift_L, spawn,          SHCMD("pkill -$((31-2)) dwmblocks") },
-	{ MODKEY2,                     XK_Shift_R, spawn,          SHCMD("pkill -$((31-2)) dwmblocks") },
-	{ MODKEY,                       XK_Home,   spawn,          SHCMD("pkill -$((31-5)) dwmblocks") },
-	{ MODKEY|MODKEY2,               XK_F4,     spawn,          SHCMD("~/.local/scripts/PowerOptions.sh") },
-	{ MODKEY,                       XK_F5,     spawn,          SHCMD("Mixer.sh set Capture toggle && pkill -$((31-4)) dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_F6,     spawn,          SHCMD("Mixer.sh set Master 15%-    && pkill -$((31-4)) dwmblocks") },
-	{ MODKEY,                       XK_F6,     spawn,          SHCMD("Mixer.sh set Master 5%-     && pkill -$((31-4)) dwmblocks") },
-	{ MODKEY|ControlMask,           XK_F6,     spawn,          SHCMD("Mixer.sh set Master 1%-     && pkill -$((31-4)) dwmblocks") },
-	{ MODKEY,                       XK_F7,     spawn,          SHCMD("Mixer.sh set Master toggle  && pkill -$((31-4)) dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_F7,     spawn,          SHCMD("Mixer.sh set Master 70%     && pkill -$((31-4)) dwmblocks") },
-	{ MODKEY|ControlMask,           XK_F7,     spawn,          SHCMD("Mixer.sh set Master 35%     && pkill -$((31-4)) dwmblocks") },
-	{ MODKEY|ControlMask,           XK_F8,     spawn,          SHCMD("Mixer.sh set Master 1%+     && pkill -$((31-4)) dwmblocks") },
-	{ MODKEY,                       XK_F8,     spawn,          SHCMD("Mixer.sh set Master 5%+     && pkill -$((31-4)) dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_F8,     spawn,          SHCMD("Mixer.sh set Master 15%+    && pkill -$((31-4)) dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_F9,     spawn,          SHCMD("Player.sh previous     && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY|ControlMask,           XK_F9,     spawn,          SHCMD("Player.sh position- 60 && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY,                       XK_F9,     spawn,          SHCMD("Player.sh position- 5  && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY,                       XK_F10,    spawn,          SHCMD("Player.sh play-pause   && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY,                       XK_F11,    spawn,          SHCMD("Player.sh position+ 5  && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY|ControlMask,           XK_F11,    spawn,          SHCMD("Player.sh position+ 60 && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_F11,    spawn,          SHCMD("Player.sh next         && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY|ControlMask,     XK_bracketleft,  spawn,          SHCMD("Player.sh speed- 0.01  && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY|ShiftMask,       XK_bracketleft,  spawn,          SHCMD("Player.sh speed- 0.05  && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY,                 XK_bracketleft,  spawn,          SHCMD("Player.sh speed- 0.1   && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY,                       XK_equal,  spawn,          SHCMD("Player.sh speed  1     && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY,                 XK_bracketright, spawn,          SHCMD("Player.sh speed+ 0.1   && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY|ShiftMask,       XK_bracketright, spawn,          SHCMD("Player.sh speed+ 0.05  && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY|ControlMask,     XK_bracketright, spawn,          SHCMD("Player.sh speed+ 0.01  && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY,                       XK_minus,  spawn,          SHCMD("Player.sh loop         && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_minus,  spawn,          SHCMD("Player.sh position     && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY|ControlMask,           XK_minus,  spawn,          SHCMD("Player.sh pause-after1 && pkill -$((31-1)) dwmblocks") },
-	{ MODKEY|ShiftMask,             XK_equal,  spawn,          SHCMD("Player.sh quit-wl      && pkill -$((31-1)) dwmblocks") },
+	{ MODKEY|MODKEY2,               XK_F4,     spawn,          SHCMD("PowerOptions.sh") },
+	{ MODKEY2,                     XK_Shift_L, spawn,          SHCMD_SIG("2", ":") },
+	{ MODKEY2,                     XK_Shift_R, spawn,          SHCMD_SIG("2", ":") },
+	{ MODKEY,                       XK_Home,   spawn,          SHCMD_SIG("5", ":") },
+	{ MODKEY,                       XK_F5,     spawn,          SHCMD_SIG("4", "Mixer.sh set Capture toggle") },
+	{ MODKEY|ShiftMask,             XK_F6,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 15%-   ") },
+	{ MODKEY,                       XK_F6,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 5%-    ") },
+	{ MODKEY|ControlMask,           XK_F6,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 1%-    ") },
+	{ MODKEY,                       XK_F7,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master toggle ") },
+	{ MODKEY|ShiftMask,             XK_F7,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 70%    ") },
+	{ MODKEY|ControlMask,           XK_F7,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 35%    ") },
+	{ MODKEY|ControlMask,           XK_F8,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 1%+    ") },
+	{ MODKEY,                       XK_F8,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 5%+    ") },
+	{ MODKEY|ShiftMask,             XK_F8,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 15%+   ") },
+	{ MODKEY|ShiftMask,             XK_F9,     spawn,          SHCMD_SIG("1", "Player.sh previous    ") },
+	{ MODKEY|ControlMask,           XK_F9,     spawn,          SHCMD_SIG("1", "Player.sh position- 60") },
+	{ MODKEY,                       XK_F9,     spawn,          SHCMD_SIG("1", "Player.sh position- 5 ") },
+	{ MODKEY,                       XK_F10,    spawn,          SHCMD_SIG("1", "Player.sh play-pause  ") },
+	{ MODKEY,                       XK_F11,    spawn,          SHCMD_SIG("1", "Player.sh position+ 5 ") },
+	{ MODKEY|ControlMask,           XK_F11,    spawn,          SHCMD_SIG("1", "Player.sh position+ 60") },
+	{ MODKEY|ShiftMask,             XK_F11,    spawn,          SHCMD_SIG("1", "Player.sh next        ") },
+	{ MODKEY|ControlMask,     XK_bracketleft,  spawn,          SHCMD_SIG("1", "Player.sh speed- 0.01 ") },
+	{ MODKEY|ShiftMask,       XK_bracketleft,  spawn,          SHCMD_SIG("1", "Player.sh speed- 0.05 ") },
+	{ MODKEY,                 XK_bracketleft,  spawn,          SHCMD_SIG("1", "Player.sh speed- 0.1  ") },
+	{ MODKEY,                       XK_equal,  spawn,          SHCMD_SIG("1", "Player.sh speed  1    ") },
+	{ MODKEY,                 XK_bracketright, spawn,          SHCMD_SIG("1", "Player.sh speed+ 0.1  ") },
+	{ MODKEY|ShiftMask,       XK_bracketright, spawn,          SHCMD_SIG("1", "Player.sh speed+ 0.05 ") },
+	{ MODKEY|ControlMask,     XK_bracketright, spawn,          SHCMD_SIG("1", "Player.sh speed+ 0.01 ") },
+	{ MODKEY,                       XK_minus,  spawn,          SHCMD_SIG("1", "Player.sh loop        ") },
+	{ MODKEY|ShiftMask,             XK_minus,  spawn,          SHCMD_SIG("1", "Player.sh position    ") },
+	{ MODKEY|ControlMask,           XK_minus,  spawn,          SHCMD_SIG("1", "Player.sh pause-after1") },
+	{ MODKEY|ShiftMask,             XK_equal,  spawn,          SHCMD_SIG("1", "Player.sh quit-wl     ") },
 	{ MODKEY,                       XK_v,      spawn,          SHCMD("clipmenu -l 50") },
 	{ MODKEY|MODKEY2,               XK_m,      spawn,          SHCMD("Music.sh") },
 	{ MODKEY|MODKEY2,               XK_g,      spawn,          SHCMD("gsimplecal") },
@@ -151,8 +152,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY|ShiftMask|ControlMask, XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY|ShiftMask,             XK_m,      setlayout,      {.v = &layouts[3]} },
-	{ MODKEY|ShiftMask,             XK_t,      setlayout,      {.v = &layouts[4]} },
+	{ MODKEY,                       XK_n,      setlayout,      {.v = &layouts[3]} },
+	{ MODKEY,                       XK_c,      setlayout,      {.v = &layouts[4]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY,                       XK_f,      setlayoutnobar, {.v = &layouts[2]} },
 	{ MODKEY|ShiftMask,             XK_f,      setlayoutnobar, {.v = &layouts[3]} },

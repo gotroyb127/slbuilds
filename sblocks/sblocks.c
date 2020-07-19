@@ -7,9 +7,9 @@
 #include <X11/Xlib.h>
 
 /* macros */
-#define TEN_9      1000000000
+#define CLOCK      CLOCK_MONOTONIC
 #define SEC        1
-#define NSEC       0.0
+#define NSEC       0
 #define LENGTH(X)  (sizeof X / sizeof X[0])
 #define TOSIG(X)   (31 - (X))
 #define FROMSIG(X) (31 - (X))
@@ -34,10 +34,11 @@ static void SetOutStr(void);
 static void SetRoot(void);
 static void SigHan(int s);
 static void SigSetup(void);
-static void Sleep(const struct timespec *rqtp, struct timespec *rem);
+static void Sleep();
 static void StdoutPrint(void);
+static void ts_diff(const struct timespec *A, const struct timespec *B, struct timespec *t);
+static int UpdateAll(int t);
 static void UpdateBlk(int i);
-static int UpdateCheck(int time);
 
 /* include configuration file before variable declerations */
 #include "config.h"
@@ -48,7 +49,9 @@ static int LastSignal = 0;
 static char OutStr[STSLEN];
 static int Restart = 0;
 static int Running = 1;
-static const struct timespec *T = &(const struct timespec) { SEC, NSEC };
+static struct timespec *next_ts = &(struct timespec) {};
+static struct timespec *curr_ts = &(struct timespec) {};
+static struct timespec *sleep_ts = &(struct timespec) {};
 /* X11 specific */
 static Display *dpy;
 static Window root;
@@ -67,15 +70,17 @@ void
 Run(void)
 {
 	int t = -1;
-	struct timespec *rem;
 
-	rem = (struct timespec *) malloc(sizeof(struct timespec *));
 	while (Running) {
-		if (UpdateCheck(++t)) {
+		clock_gettime(CLOCK, curr_ts);
+		*next_ts = (struct timespec) { curr_ts->tv_sec + SEC,
+		                           curr_ts->tv_nsec + NSEC };
+
+		if (UpdateAll(++t)) {
 			SetOutStr();
 			Print();
 		}
-		Sleep(T, rem);
+		Sleep();
 	}
 }
 
@@ -129,8 +134,10 @@ SigSetup(void)
 }
 
 void
-Sleep(const struct timespec *rqtp, struct timespec *rem)
+Sleep()
 {
+	if (!Running)
+		return;
 	if (LastSignal) {
 		for (int i = 0; i < BLKN; ++i) {
 			if (blks[i].sig == LastSignal)
@@ -140,14 +147,45 @@ Sleep(const struct timespec *rqtp, struct timespec *rem)
 		SetOutStr();
 		Print();
 	}
-	if (Running && nanosleep(rqtp, rem))
-		Sleep(rem, rem);
+	clock_gettime(CLOCK, curr_ts);
+	ts_diff(next_ts, curr_ts, sleep_ts);
+	if (nanosleep(sleep_ts, NULL))
+		Sleep();
 }
 
 void
 StdoutPrint(void)
 {
 	printf("%s\n", OutStr);
+}
+
+void
+ts_diff(const struct timespec *A, const struct timespec *B, struct timespec *t)
+{
+	*t = (struct timespec) { A->tv_sec - B->tv_sec, A->tv_nsec - B->tv_nsec };
+	if (t->tv_nsec < 0) {
+		t->tv_nsec += 1e9;
+		--t->tv_sec;
+	}
+	if (t->tv_sec < 0) {
+		t->tv_sec = 0;
+		t->tv_nsec = 1e3;
+	}
+}
+
+int
+UpdateAll(int t)
+{
+	int i, per, U;
+
+	for (i = U = 0; i < BLKN; ++i) {
+		per = blks[i].period;
+		if (per != 0 && t % per == 0 || t == 0) {
+			UpdateBlk(i);
+			U = 1;
+		}
+	}
+	return U;
 }
 
 void
@@ -160,21 +198,6 @@ UpdateBlk(int i)
 	if (!fgets(blkstr[i], BLKLEN, cmdout))
 		*blkstr[i] = '\0';
 	pclose(cmdout);
-}
-
-int
-UpdateCheck(int T)
-{
-	int i, per, U;
-
-	for (i = U = 0; i < BLKN; ++i) {
-		per = blks[i].period;
-		if (per != 0 && T % per == 0 || T == 0) {
-			UpdateBlk(i);
-			U = 1;
-		}
-	}
-	return U;
 }
 
 int
