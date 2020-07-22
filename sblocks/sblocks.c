@@ -49,9 +49,9 @@ static int LastSignal = 0;
 static char OutStr[STSLEN];
 static int Restart = 0;
 static int Running = 1;
-static struct timespec *next_ts = &(struct timespec) {};
-static struct timespec *curr_ts = &(struct timespec) {};
-static struct timespec *sleep_ts = &(struct timespec) {};
+static struct timespec *next_ts = &(struct timespec) { 0, 0 };
+static struct timespec *curr_ts = &(struct timespec) { 0, 0 };
+static struct timespec *sleep_ts = &(struct timespec) { 0, 0 };
 /* X11 specific */
 static Display *dpy;
 static Window root;
@@ -74,7 +74,7 @@ Run(void)
 	while (Running) {
 		clock_gettime(CLOCK, curr_ts);
 		*next_ts = (struct timespec) { curr_ts->tv_sec + SEC,
-		                           curr_ts->tv_nsec + NSEC };
+		                               curr_ts->tv_nsec + NSEC };
 
 		if (UpdateAll(++t)) {
 			SetOutStr();
@@ -100,7 +100,7 @@ SetRoot(void)
 {
 	Display *d;
 
-	if (d = XOpenDisplay(NULL))
+	if ((d = XOpenDisplay(NULL)))
 		dpy = d;
 	screen = DefaultScreen(dpy);
 	root = RootWindow(dpy, screen);
@@ -149,6 +149,7 @@ Sleep()
 	}
 	clock_gettime(CLOCK, curr_ts);
 	ts_diff(next_ts, curr_ts, sleep_ts);
+/*	fprintf(stderr, "%ld.%09ld\n", sleep_ts->tv_sec, sleep_ts->tv_nsec); */
 	if (nanosleep(sleep_ts, NULL))
 		Sleep();
 }
@@ -180,7 +181,7 @@ UpdateAll(int t)
 
 	for (i = U = 0; i < BLKN; ++i) {
 		per = blks[i].period;
-		if (per != 0 && t % per == 0 || t == 0) {
+		if ((per != 0 && t % per == 0) || t == 0) {
 			UpdateBlk(i);
 			U = 1;
 		}
@@ -192,7 +193,6 @@ void
 UpdateBlk(int i)
 {
 	FILE *cmdout;
-	char * s;
 
 	cmdout = popen(blks[i].cmd, "r");
 	if (!fgets(blkstr[i], BLKLEN, cmdout))

@@ -1,12 +1,29 @@
-PREFIX ?= /usr/local
+# sblocks
 
-output: sblocks.c config.h
-	cc -lX11 sblocks.c -o dwmblocks
+include config.mk
+
+SRC = sblocks.c
+OBJ = ${SRC:.c=.o}
+EXE = sblocks
+
+all: ${EXE}
+
+${OBJ}: config.h
+
+.c.o:
+	${CC} -c ${CFLAGS} $<
+
+${EXE}: ${OBJ}
+	${CC} -o $@ ${OBJ} ${LDFLAGS}
+
+
 clean:
-	rm -f *.o *.gch dwmblocks
-install: output
-	mkdir -p $(DESTDIR)$(PREFIX)/bin
-	cp -f dwmblocks $(DESTDIR)$(PREFIX)/bin
-	chmod 755 $(DESTDIR)$(PREFIX)/bin/dwmblocks
+	rm -f *.o *.gch ${EXE}
+
+install: all
+	mkdir -p ${DESTDIR}${PREFIX}/bin
+	cp -f ${EXE} ${DESTDIR}${PREFIX}/bin
+	chmod 755 ${DESTDIR}${PREFIX}/bin/${EXE}
+
 uninstall:
-	rm -f $(DESTDIR)$(PREFIX)/bin/dwmblocks
+	rm -f ${DESTDIR}${PREFIX}/bin/${EXE}
