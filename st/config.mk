@@ -34,4 +34,4 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
 #       `pkg-config --libs freetype2`
 
 # compiler and linker
-# CC = c99
+CC = cc

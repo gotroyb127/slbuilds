@@ -72,7 +72,7 @@ static const Layout layouts[] = {
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)        { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
-#define SHCMD_SIG(N, cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd" && pkill -$((31-"N")) dwmblocks", NULL } }
+#define SHCMD_SIG(N, cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd" && pkill -$((31-"N")) sblocks", NULL } }
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -141,6 +141,7 @@ static Key keys[] = {
 	{ MODKEY|ControlMask,           XK_l,      setmfact,       {.f = +0.025} },
 	{ MODKEY,                       XK_o,      setmfact,       {.f = 1.5} },
 	{ MODKEY|ControlMask,           XK_o,      setmfact,       {.f = 1.33} },
+	{ MODKEY|ControlMask,           XK_i,      setmfact,       {.f = 1.15} },
 	{ MODKEY|ShiftMask,             XK_h,      setcfact,       {.f = -0.5} },
 	{ MODKEY|ShiftMask,             XK_l,      setcfact,       {.f = +0.5} },
 	{ MODKEY|ShiftMask|ControlMask, XK_h,      setcfact,       {.f = -0.25} },
