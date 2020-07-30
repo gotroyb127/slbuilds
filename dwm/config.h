@@ -72,7 +72,9 @@ static const Layout layouts[] = {
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)        { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
-#define SHCMD_SIG(N, cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd" && pkill -$((31-"N")) sblocks", NULL } }
+#define SHCMD_SIG(N, cmd) SHCMD(cmd" && killall -$((31-"N")) sblocks")
+#define MIXER(args) "amixer -Mq set "args
+#define PLAYER(args) "Player.sh "args
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -81,108 +83,109 @@ static const char *termcmd[]  = { "st", "tmux", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY|ControlMask,           XK_Return, spawn,          SHCMD("tmux has 2> /dev/null && st tmux attach") },
-	{ MODKEY|MODKEY2,               XK_c,      spawn,          SHCMD("st tmux new $SHELL -ic lf") },
-	{ MODKEY|MODKEY2,               XK_F4,     spawn,          SHCMD("PowerOptions.sh") },
-	{ MODKEY2,                     XK_Shift_L, spawn,          SHCMD_SIG("2", ":") },
-	{ MODKEY2,                     XK_Shift_R, spawn,          SHCMD_SIG("2", ":") },
-	{ MODKEY,                       XK_Home,   spawn,          SHCMD_SIG("5", ":") },
-	{ MODKEY,                       XK_F5,     spawn,          SHCMD_SIG("4", "Mixer.sh set Capture toggle") },
-	{ MODKEY|ShiftMask,             XK_F6,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 15%-   ") },
-	{ MODKEY,                       XK_F6,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 5%-    ") },
-	{ MODKEY|ControlMask,           XK_F6,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 1%-    ") },
-	{ MODKEY,                       XK_F7,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master toggle ") },
-	{ MODKEY|ShiftMask,             XK_F7,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 70%    ") },
-	{ MODKEY|ControlMask,           XK_F7,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 35%    ") },
-	{ MODKEY|ControlMask,           XK_F8,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 1%+    ") },
-	{ MODKEY,                       XK_F8,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 5%+    ") },
-	{ MODKEY|ShiftMask,             XK_F8,     spawn,          SHCMD_SIG("4", "Mixer.sh set Master 15%+   ") },
-	{ MODKEY|ShiftMask,             XK_F9,     spawn,          SHCMD_SIG("1", "Player.sh previous    ") },
-	{ MODKEY|ControlMask,           XK_F9,     spawn,          SHCMD_SIG("1", "Player.sh position- 60") },
-	{ MODKEY,                       XK_F9,     spawn,          SHCMD_SIG("1", "Player.sh position- 5 ") },
-	{ MODKEY,                       XK_F10,    spawn,          SHCMD_SIG("1", "Player.sh play-pause  ") },
-	{ MODKEY,                       XK_F11,    spawn,          SHCMD_SIG("1", "Player.sh position+ 5 ") },
-	{ MODKEY|ControlMask,           XK_F11,    spawn,          SHCMD_SIG("1", "Player.sh position+ 60") },
-	{ MODKEY|ShiftMask,             XK_F11,    spawn,          SHCMD_SIG("1", "Player.sh next        ") },
-	{ MODKEY|ControlMask,     XK_bracketleft,  spawn,          SHCMD_SIG("1", "Player.sh speed- 0.01 ") },
-	{ MODKEY|ShiftMask,       XK_bracketleft,  spawn,          SHCMD_SIG("1", "Player.sh speed- 0.05 ") },
-	{ MODKEY,                 XK_bracketleft,  spawn,          SHCMD_SIG("1", "Player.sh speed- 0.1  ") },
-	{ MODKEY,                       XK_equal,  spawn,          SHCMD_SIG("1", "Player.sh speed  1    ") },
-	{ MODKEY,                 XK_bracketright, spawn,          SHCMD_SIG("1", "Player.sh speed+ 0.1  ") },
-	{ MODKEY|ShiftMask,       XK_bracketright, spawn,          SHCMD_SIG("1", "Player.sh speed+ 0.05 ") },
-	{ MODKEY|ControlMask,     XK_bracketright, spawn,          SHCMD_SIG("1", "Player.sh speed+ 0.01 ") },
-	{ MODKEY,                       XK_minus,  spawn,          SHCMD_SIG("1", "Player.sh loop        ") },
-	{ MODKEY|ShiftMask,             XK_minus,  spawn,          SHCMD_SIG("1", "Player.sh position    ") },
-	{ MODKEY|ControlMask,           XK_minus,  spawn,          SHCMD_SIG("1", "Player.sh pause-after1") },
-	{ MODKEY|ShiftMask,             XK_equal,  spawn,          SHCMD_SIG("1", "Player.sh quit-wl     ") },
-	{ MODKEY,                       XK_v,      spawn,          SHCMD("clipmenu -l 50") },
-	{ MODKEY|MODKEY2,               XK_m,      spawn,          SHCMD("Music.sh") },
-	{ MODKEY|MODKEY2,               XK_g,      spawn,          SHCMD("gsimplecal") },
-	{ MODKEY|MODKEY2,               XK_s,      spawn,          SHCMD("firefox") },
-	{ MODKEY|MODKEY2,               XK_a,      spawn,          SHCMD("firefox -P") },
-	{ MODKEY|MODKEY2,               XK_d,      spawn,          SHCMD("firefox -P 1Private") },
-	{ MODKEY|MODKEY2|ControlMask,   XK_a,      spawn,          SHCMD("firefox -P --private-window") },
-	{ MODKEY|MODKEY2,               XK_h,      spawn,          SHCMD("st -e htop") },
-	{ MODKEY,                       XK_Print,  spawn,          SHCMD("PrintScreen.sh") },
-	{ MODKEY|ShiftMask,             XK_Print,  spawn,          SHCMD("PrintScreen.sh window") },
-	{ MODKEY|ControlMask,           XK_p,      spawn,          SHCMD("xfce4-appfinder") },
-	{ MODKEY|ControlMask,           XK_c,      spawn,          SHCMD("xcalib -o 1 -i -a") },
-	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_j,      pushdown,       {0} },
-	{ MODKEY|ShiftMask,             XK_k,      pushup,         {0} },
-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-	{ MODKEY|ControlMask,           XK_h,      setmfact,       {.f = -0.025} },
-	{ MODKEY|ControlMask,           XK_l,      setmfact,       {.f = +0.025} },
-	{ MODKEY,                       XK_o,      setmfact,       {.f = 1.5} },
-	{ MODKEY|ControlMask,           XK_o,      setmfact,       {.f = 1.33} },
-	{ MODKEY|ControlMask,           XK_i,      setmfact,       {.f = 1.15} },
-	{ MODKEY|ShiftMask,             XK_h,      setcfact,       {.f = -0.5} },
-	{ MODKEY|ShiftMask,             XK_l,      setcfact,       {.f = +0.5} },
-	{ MODKEY|ShiftMask|ControlMask, XK_h,      setcfact,       {.f = -0.25} },
-	{ MODKEY|ShiftMask|ControlMask, XK_l,      setcfact,       {.f = +0.25} },
-	{ MODKEY|ShiftMask,             XK_o,      setcfact,       {.f =  0.0} },
-	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
-	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY,                       XK_q,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY|ShiftMask|ControlMask, XK_f,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_n,      setlayout,      {.v = &layouts[3]} },
-	{ MODKEY,                       XK_c,      setlayout,      {.v = &layouts[4]} },
-	{ MODKEY,                       XK_space,  setlayout,      {0} },
-	{ MODKEY,                       XK_f,      setlayoutnobar, {.v = &layouts[2]} },
-	{ MODKEY|ShiftMask,             XK_f,      setlayoutnobar, {.v = &layouts[3]} },
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
-	{ MODKEY,                       XK_u,      toggleisperm,   {0} },
-	{ MODKEY|ControlMask,           XK_f,      togglefullscr,  {0} },
-	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
-	TILEKEYS(MODKEY,                                           1, 0, 0)
-	TILEKEYS(MODKEY|ShiftMask,                                 0, 1, 0)
-	TILEKEYS(MODKEY|ControlMask,                               0, 0, 1)
-	TILEKEYS(MODKEY|ShiftMask|ControlMask,                     1, 1, 1)
-	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
-	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
-	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
-	TAGKEYS(                        XK_1,                      0)
-	TAGKEYS(                        XK_2,                      1)
-	TAGKEYS(                        XK_3,                      2)
-	TAGKEYS(                        XK_4,                      3)
-	TAGKEYS(                        XK_5,                      4)
-	TAGKEYS(                        XK_6,                      5)
-	TAGKEYS(                        XK_7,                      6)
-	TAGKEYS(                        XK_8,                      7)
-	TAGKEYS(                        XK_9,                      8)
-	{ MODKEY|ShiftMask,             XK_e,      quit,           {0} },
-	{ MODKEY|ShiftMask|ControlMask, XK_e,      quit,           {1} },
+	{ MODKEY,                       XK_p,            spawn,          {.v = dmenucmd } },
+	{ MODKEY,                       XK_Return,       spawn,          {.v = termcmd } },
+	{ MODKEY|ControlMask,           XK_Return,       spawn,          SHCMD("tmux has 2> /dev/null && st tmux attach") },
+	{ MODKEY|MODKEY2,               XK_c,            spawn,          SHCMD("st tmux new $SHELL -ic lf") },
+	{ MODKEY|MODKEY2,               XK_F4,           spawn,          SHCMD("PowerOptions.sh") },
+	{ MODKEY2,                      XK_Shift_L,      spawn,          SHCMD_SIG("2", ":") },
+	{ MODKEY2,                      XK_Shift_R,      spawn,          SHCMD_SIG("2", ":") },
+	{ MODKEY,                       XK_Home,         spawn,          SHCMD_SIG("5", ":") },
+	{ MODKEY,                       XK_F5,           spawn,          SHCMD_SIG("4", MIXER("Capture toggle")) },
+	{ MODKEY|ShiftMask,             XK_F6,           spawn,          SHCMD_SIG("4", MIXER("Master 15%-   ")) },
+	{ MODKEY,                       XK_F6,           spawn,          SHCMD_SIG("4", MIXER("Master 5%-    ")) },
+	{ MODKEY|ControlMask,           XK_F6,           spawn,          SHCMD_SIG("4", MIXER("Master 1%-    ")) },
+	{ MODKEY,                       XK_F7,           spawn,          SHCMD_SIG("4", MIXER("Master toggle ")) },
+	{ MODKEY|ShiftMask,             XK_F7,           spawn,          SHCMD_SIG("4", MIXER("Master 70%    ")) },
+	{ MODKEY|ControlMask,           XK_F7,           spawn,          SHCMD_SIG("4", MIXER("Master 35%    ")) },
+	{ MODKEY|ControlMask,           XK_F8,           spawn,          SHCMD_SIG("4", MIXER("Master 1%+    ")) },
+	{ MODKEY,                       XK_F8,           spawn,          SHCMD_SIG("4", MIXER("Master 5%+    ")) },
+	{ MODKEY|ShiftMask,             XK_F8,           spawn,          SHCMD_SIG("4", MIXER("Master 15%+   ")) },
+	{ MODKEY|ShiftMask,             XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("previous    ")) },
+	{ MODKEY|ControlMask,           XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 60")) },
+	{ MODKEY,                       XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 5 ")) },
+	{ MODKEY,                       XK_F10,          spawn,          SHCMD_SIG("1", PLAYER("play-pause  ")) },
+	{ MODKEY,                       XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("position+ 5 ")) },
+	{ MODKEY|ControlMask,           XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("position+ 60")) },
+	{ MODKEY|ShiftMask,             XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("next        ")) },
+	{ MODKEY|ControlMask,           XK_bracketleft,  spawn,          SHCMD_SIG("1", PLAYER("speed- 0.01 ")) },
+	{ MODKEY|ShiftMask,             XK_bracketleft,  spawn,          SHCMD_SIG("1", PLAYER("speed- 0.05 ")) },
+	{ MODKEY,                       XK_bracketleft,  spawn,          SHCMD_SIG("1", PLAYER("speed- 0.1  ")) },
+	{ MODKEY,                       XK_equal,        spawn,          SHCMD_SIG("1", PLAYER("speed  1    ")) },
+	{ MODKEY,                       XK_bracketright, spawn,          SHCMD_SIG("1", PLAYER("speed+ 0.1  ")) },
+	{ MODKEY|ShiftMask,             XK_bracketright, spawn,          SHCMD_SIG("1", PLAYER("speed+ 0.05 ")) },
+	{ MODKEY|ControlMask,           XK_bracketright, spawn,          SHCMD_SIG("1", PLAYER("speed+ 0.01 ")) },
+	{ MODKEY,                       XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("loop- 1     ")) },
+	{ MODKEY|ShiftMask|ControlMask, XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("loop+ 1     ")) },
+	{ MODKEY|ShiftMask,             XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("position    ")) },
+	{ MODKEY|ControlMask,           XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("pause-after1")) },
+	{ MODKEY|ShiftMask,             XK_equal,        spawn,          SHCMD_SIG("1", PLAYER("quit-wl     ")) },
+	{ MODKEY,                       XK_v,            spawn,          SHCMD("clipmenu -l 50") },
+	{ MODKEY|MODKEY2,               XK_m,            spawn,          SHCMD("Music.sh") },
+	{ MODKEY|MODKEY2,               XK_g,            spawn,          SHCMD("gsimplecal") },
+	{ MODKEY|MODKEY2,               XK_s,            spawn,          SHCMD("firefox") },
+	{ MODKEY|MODKEY2,               XK_a,            spawn,          SHCMD("firefox -P") },
+	{ MODKEY|MODKEY2,               XK_d,            spawn,          SHCMD("firefox -P 1Private") },
+	{ MODKEY|MODKEY2|ControlMask,   XK_a,            spawn,          SHCMD("firefox -P --private-window") },
+	{ MODKEY|MODKEY2,               XK_h,            spawn,          SHCMD("st -e htop") },
+	{ MODKEY,                       XK_Print,        spawn,          SHCMD("PrintScreen.sh") },
+	{ MODKEY|ShiftMask,             XK_Print,        spawn,          SHCMD("PrintScreen.sh window") },
+	{ MODKEY|ControlMask,           XK_p,            spawn,          SHCMD("xfce4-appfinder") },
+	{ MODKEY|ControlMask,           XK_c,            spawn,          SHCMD("xcalib -o 1 -i -a") },
+	{ MODKEY,                       XK_j,            focusstack,     {.i = +1 } },
+	{ MODKEY,                       XK_k,            focusstack,     {.i = -1 } },
+	{ MODKEY|ShiftMask,             XK_j,            pushdown,       {0} },
+	{ MODKEY|ShiftMask,             XK_k,            pushup,         {0} },
+	{ MODKEY,                       XK_i,            incnmaster,     {.i = +1 } },
+	{ MODKEY,                       XK_d,            incnmaster,     {.i = -1 } },
+	{ MODKEY,                       XK_h,            setmfact,       {.f = -0.1} },
+	{ MODKEY,                       XK_l,            setmfact,       {.f = +0.1} },
+	{ MODKEY|ControlMask,           XK_h,            setmfact,       {.f = -0.025} },
+	{ MODKEY|ControlMask,           XK_l,            setmfact,       {.f = +0.025} },
+	{ MODKEY,                       XK_o,            setmfact,       {.f = 1.5} },
+	{ MODKEY|ControlMask,           XK_o,            setmfact,       {.f = 1.33} },
+	{ MODKEY|ControlMask,           XK_i,            setmfact,       {.f = 1.15} },
+	{ MODKEY|ShiftMask,             XK_h,            setcfact,       {.f = -0.5} },
+	{ MODKEY|ShiftMask,             XK_l,            setcfact,       {.f = +0.5} },
+	{ MODKEY|ShiftMask|ControlMask, XK_h,            setcfact,       {.f = -0.25} },
+	{ MODKEY|ShiftMask|ControlMask, XK_l,            setcfact,       {.f = +0.25} },
+	{ MODKEY|ShiftMask,             XK_o,            setcfact,       {.f =  0.0} },
+	{ MODKEY|ShiftMask,             XK_Return,       zoom,           {0} },
+	{ MODKEY,                       XK_Tab,          view,           {0} },
+	{ MODKEY,                       XK_q,            killclient,     {0} },
+	{ MODKEY,                       XK_t,            setlayout,      {.v = &layouts[0]} },
+	{ MODKEY|ShiftMask|ControlMask, XK_f,            setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                       XK_m,            setlayout,      {.v = &layouts[2]} },
+	{ MODKEY,                       XK_n,            setlayout,      {.v = &layouts[3]} },
+	{ MODKEY,                       XK_c,            setlayout,      {.v = &layouts[4]} },
+	{ MODKEY,                       XK_space,        setlayout,      {0} },
+	{ MODKEY,                       XK_f,            setlayoutnobar, {.v = &layouts[2]} },
+	{ MODKEY|ShiftMask,             XK_f,            setlayoutnobar, {.v = &layouts[3]} },
+	{ MODKEY,                       XK_b,            togglebar,      {0} },
+	{ MODKEY,                       XK_u,            toggleisperm,   {0} },
+	{ MODKEY|ControlMask,           XK_f,            togglefullscr,  {0} },
+	{ MODKEY|ShiftMask,             XK_space,        togglefloating, {0} },
+	TILEKEYS(MODKEY,                                                 1, 0, 0)
+	TILEKEYS(MODKEY|ShiftMask,                                       0, 1, 0)
+	TILEKEYS(MODKEY|ControlMask,                                     0, 0, 1)
+	TILEKEYS(MODKEY|ShiftMask|ControlMask,                           1, 1, 1)
+	{ MODKEY,                       XK_0,            view,           {.ui = ~0 } },
+	{ MODKEY|ShiftMask,             XK_0,            tag,            {.ui = ~0 } },
+	{ MODKEY,                       XK_comma,        focusmon,       {.i = -1 } },
+	{ MODKEY,                       XK_period,       focusmon,       {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_comma,        tagmon,         {.i = -1 } },
+	{ MODKEY|ShiftMask,             XK_period,       tagmon,         {.i = +1 } },
+	TAGKEYS(                        XK_1,                            0)
+	TAGKEYS(                        XK_2,                            1)
+	TAGKEYS(                        XK_3,                            2)
+	TAGKEYS(                        XK_4,                            3)
+	TAGKEYS(                        XK_5,                            4)
+	TAGKEYS(                        XK_6,                            5)
+	TAGKEYS(                        XK_7,                            6)
+	TAGKEYS(                        XK_8,                            7)
+	TAGKEYS(                        XK_9,                            8)
+	{ MODKEY|ShiftMask,             XK_e,            quit,           {0} },
+	{ MODKEY|ShiftMask|ControlMask, XK_e,            quit,           {1} },
 };
 
 /* button definitions */
