@@ -105,7 +105,8 @@ struct Client {
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
 	unsigned int tags;
-	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isperm;
+	int isfixed, isfloating, isurgent, neverfocus, oldstate,
+	    isfullscreen, isperm;
 	Client *next;
 	Client *snext;
 	Monitor *mon;
@@ -1449,7 +1450,8 @@ resizeclient(Client *c, int x, int y, int w, int h)
 		c->w = wc.width += c->bw * 2;
 		c->h = wc.height += c->bw * 2;
 		wc.border_width = 0;
-	}	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
+	}
+	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
 	XSync(dpy, False);
 }
