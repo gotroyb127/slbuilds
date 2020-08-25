@@ -5,9 +5,10 @@ static const unsigned int borderpx  = 3;        /* border pixel of windows */
 static const unsigned int snap      = 15;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Fira Code Medium:size=9" };
-//static const char *fonts[]          = { "Fira Code Medium:size=12" };
-static const char dmenufont[]       = "Fira Code Medium:size=9";
+static const char *fonts[]          = { "Fira Code Medium:size=10" };
+static const char dmenufont[]       = "Fira Code Medium:size=10";
+//static const char *fonts[]          = { "Fira Code Medium:size=9" };
+//static const char dmenufont[]       = "Fira Code Medium:size=9";
 static const char col_gray0[]       = "#000000";
 static const char col_gray1[]       = "#111111";
 static const char col_gray2[]       = "#444444";
@@ -44,7 +45,7 @@ static const Rule rules[] = {
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
 static const int dirs[3]     = { DirHor, DirVer, DirVer }; /* tiling dirs */
 static const int nmaster     = 1;    /* number of clients in master area */
-static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
 static const float scalefactorx = 0.45, scalefactory = 0.0; /* for centeredmonocle
 	useful when positive
 	they control the scaling between mfact and the gaps in the centered modes
@@ -72,7 +73,7 @@ static const Layout layouts[] = {
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)        { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
-#define SHCMD_SIG(N, cmd) SHCMD(cmd" && killall -$((31-"N")) sblocks")
+#define SHCMD_SIG(N, cmd) SHCMD(cmd" && killall -$((31-"N")) -r '^sblocks'")
 #define MIXER(args) "amixer -Mq set "args
 #define PLAYER(args) "Player.sh "args
 
@@ -83,55 +84,7 @@ static const char *termcmd[]  = { "st", "tmux", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,            spawn,          {.v = dmenucmd } },
-	{ MODKEY,                       XK_Return,       spawn,          {.v = termcmd } },
-	{ MODKEY|ControlMask,           XK_Return,       spawn,          SHCMD("tmux has 2> /dev/null && st tmux attach") },
-	{ MODKEY|MODKEY2,               XK_c,            spawn,          SHCMD("st tmux new $SHELL -ic lf") },
-	{ MODKEY|MODKEY2,               XK_F4,           spawn,          SHCMD("PowerOptions.sh") },
-	{ MODKEY2,                      XK_Shift_L,      spawn,          SHCMD_SIG("2", ":") },
-	{ MODKEY2,                      XK_Shift_R,      spawn,          SHCMD_SIG("2", ":") },
-	{ MODKEY,                       XK_Home,         spawn,          SHCMD_SIG("5", ":") },
-	{ MODKEY,                       XK_F5,           spawn,          SHCMD_SIG("4", MIXER("Capture toggle")) },
-	{ MODKEY|ShiftMask,             XK_F6,           spawn,          SHCMD_SIG("4", MIXER("Master 15%-   ")) },
-	{ MODKEY,                       XK_F6,           spawn,          SHCMD_SIG("4", MIXER("Master 5%-    ")) },
-	{ MODKEY|ControlMask,           XK_F6,           spawn,          SHCMD_SIG("4", MIXER("Master 1%-    ")) },
-	{ MODKEY,                       XK_F7,           spawn,          SHCMD_SIG("4", MIXER("Master toggle ")) },
-	{ MODKEY|ShiftMask,             XK_F7,           spawn,          SHCMD_SIG("4", MIXER("Master 70%    ")) },
-	{ MODKEY|ControlMask,           XK_F7,           spawn,          SHCMD_SIG("4", MIXER("Master 35%    ")) },
-	{ MODKEY|ControlMask,           XK_F8,           spawn,          SHCMD_SIG("4", MIXER("Master 1%+    ")) },
-	{ MODKEY,                       XK_F8,           spawn,          SHCMD_SIG("4", MIXER("Master 5%+    ")) },
-	{ MODKEY|ShiftMask,             XK_F8,           spawn,          SHCMD_SIG("4", MIXER("Master 15%+   ")) },
-	{ MODKEY|ShiftMask,             XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("previous    ")) },
-	{ MODKEY|ControlMask,           XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 60")) },
-	{ MODKEY,                       XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 5 ")) },
-	{ MODKEY,                       XK_F10,          spawn,          SHCMD_SIG("1", PLAYER("play-pause  ")) },
-	{ MODKEY,                       XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("position+ 5 ")) },
-	{ MODKEY|ControlMask,           XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("position+ 60")) },
-	{ MODKEY|ShiftMask,             XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("next        ")) },
-	{ MODKEY|ControlMask,           XK_bracketleft,  spawn,          SHCMD_SIG("1", PLAYER("speed- 0.01 ")) },
-	{ MODKEY|ShiftMask,             XK_bracketleft,  spawn,          SHCMD_SIG("1", PLAYER("speed- 0.05 ")) },
-	{ MODKEY,                       XK_bracketleft,  spawn,          SHCMD_SIG("1", PLAYER("speed- 0.1  ")) },
-	{ MODKEY,                       XK_equal,        spawn,          SHCMD_SIG("1", PLAYER("speed  1    ")) },
-	{ MODKEY,                       XK_bracketright, spawn,          SHCMD_SIG("1", PLAYER("speed+ 0.1  ")) },
-	{ MODKEY|ShiftMask,             XK_bracketright, spawn,          SHCMD_SIG("1", PLAYER("speed+ 0.05 ")) },
-	{ MODKEY|ControlMask,           XK_bracketright, spawn,          SHCMD_SIG("1", PLAYER("speed+ 0.01 ")) },
-	{ MODKEY,                       XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("loop- 1     ")) },
-	{ MODKEY|ShiftMask|ControlMask, XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("loop+ 1     ")) },
-	{ MODKEY|ShiftMask,             XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("position    ")) },
-	{ MODKEY|ControlMask,           XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("pause-after1")) },
-	{ MODKEY|ShiftMask,             XK_equal,        spawn,          SHCMD_SIG("1", PLAYER("quit-wl     ")) },
-	{ MODKEY,                       XK_v,            spawn,          SHCMD("clipmenu -l 50") },
-	{ MODKEY|MODKEY2,               XK_m,            spawn,          SHCMD("Music.sh") },
-	{ MODKEY|MODKEY2,               XK_g,            spawn,          SHCMD("gsimplecal") },
-	{ MODKEY|MODKEY2,               XK_s,            spawn,          SHCMD("firefox") },
-	{ MODKEY|MODKEY2,               XK_a,            spawn,          SHCMD("firefox -P") },
-	{ MODKEY|MODKEY2,               XK_d,            spawn,          SHCMD("firefox -P 1Private") },
-	{ MODKEY|MODKEY2|ControlMask,   XK_a,            spawn,          SHCMD("firefox -P --private-window") },
-	{ MODKEY|MODKEY2,               XK_h,            spawn,          SHCMD("st -e htop") },
-	{ MODKEY,                       XK_Print,        spawn,          SHCMD("PrintScreen.sh") },
-	{ MODKEY|ShiftMask,             XK_Print,        spawn,          SHCMD("PrintScreen.sh window") },
-	{ MODKEY|ControlMask,           XK_p,            spawn,          SHCMD("xfce4-appfinder") },
-	{ MODKEY|ControlMask,           XK_c,            spawn,          SHCMD("xcalib -o 1 -i -a") },
+
 	{ MODKEY,                       XK_j,            focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,            focusstack,     {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_j,            pushdown,       {0} },
@@ -186,6 +139,57 @@ static Key keys[] = {
 	TAGKEYS(                        XK_9,                            8)
 	{ MODKEY|ShiftMask,             XK_e,            quit,           {0} },
 	{ MODKEY|ShiftMask|ControlMask, XK_e,            quit,           {1} },
+
+	{ MODKEY,                       XK_p,            spawn,          {.v = dmenucmd } },
+	{ MODKEY,                       XK_Return,       spawn,          {.v = termcmd } },
+	{ MODKEY|MODKEY2,               XK_c,            spawn,          SHCMD("st tmux new $SHELL -ic lf") },
+	{ MODKEY|ControlMask,           XK_Return,       spawn,          SHCMD("tmux has 2> /dev/null && st tmux attach") },
+	{ MODKEY|MODKEY2,               XK_F4,           spawn,          SHCMD("PowerOptions.sh") },
+	{ MODKEY2,                      XK_Shift_L,      spawn,          SHCMD_SIG("2", ":") },
+	{ MODKEY2,                      XK_Shift_R,      spawn,          SHCMD_SIG("2", ":") },
+	{ MODKEY,                       XK_Home,         spawn,          SHCMD_SIG("5", ":") },
+	{ MODKEY|ControlMask,           XK_F5,           spawn,          SHCMD_SIG("4", ":") },
+	{ MODKEY,                       XK_F5,           spawn,          SHCMD_SIG("4", MIXER("Capture toggle")) },
+	{ MODKEY|ShiftMask,             XK_F6,           spawn,          SHCMD_SIG("4", MIXER("Master 15%-   ")) },
+	{ MODKEY,                       XK_F6,           spawn,          SHCMD_SIG("4", MIXER("Master 5%-    ")) },
+	{ MODKEY|ControlMask,           XK_F6,           spawn,          SHCMD_SIG("4", MIXER("Master 1%-    ")) },
+	{ MODKEY,                       XK_F7,           spawn,          SHCMD_SIG("4", MIXER("Master toggle ")) },
+	{ MODKEY|ShiftMask,             XK_F7,           spawn,          SHCMD_SIG("4", MIXER("Master 70%    ")) },
+	{ MODKEY|ControlMask,           XK_F7,           spawn,          SHCMD_SIG("4", MIXER("Master 35%    ")) },
+	{ MODKEY|ControlMask,           XK_F8,           spawn,          SHCMD_SIG("4", MIXER("Master 1%+    ")) },
+	{ MODKEY,                       XK_F8,           spawn,          SHCMD_SIG("4", MIXER("Master 5%+    ")) },
+	{ MODKEY|ShiftMask,             XK_F8,           spawn,          SHCMD_SIG("4", MIXER("Master 15%+   ")) },
+	{ MODKEY|ShiftMask,             XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("previous     ")) },
+	{ MODKEY|ControlMask,           XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 60 ")) },
+	{ MODKEY,                       XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 5  ")) },
+	{ MODKEY,                       XK_F10,          spawn,          SHCMD_SIG("1", PLAYER("play-pause   ")) },
+	{ MODKEY|ControlMask,           XK_F10,          spawn,          SHCMD_SIG("1", PLAYER("pause-after 1")) },
+	{ MODKEY,                       XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("position+ 5  ")) },
+	{ MODKEY|ControlMask,           XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("position+ 60 ")) },
+	{ MODKEY|ShiftMask,             XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("next         ")) },
+	{ MODKEY|ControlMask,           XK_bracketleft,  spawn,          SHCMD_SIG("1", PLAYER("speed- 0.01  ")) },
+	{ MODKEY|ShiftMask,             XK_bracketleft,  spawn,          SHCMD_SIG("1", PLAYER("speed- 0.05  ")) },
+	{ MODKEY,                       XK_bracketleft,  spawn,          SHCMD_SIG("1", PLAYER("speed- 0.1   ")) },
+	{ MODKEY,                       XK_equal,        spawn,          SHCMD_SIG("1", PLAYER("speed  1     ")) },
+	{ MODKEY,                       XK_bracketright, spawn,          SHCMD_SIG("1", PLAYER("speed+ 0.1   ")) },
+	{ MODKEY|ShiftMask,             XK_bracketright, spawn,          SHCMD_SIG("1", PLAYER("speed+ 0.05  ")) },
+	{ MODKEY|ControlMask,           XK_bracketright, spawn,          SHCMD_SIG("1", PLAYER("speed+ 0.01  ")) },
+	{ MODKEY,                       XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("loop- 1      ")) },
+	{ MODKEY|ShiftMask|ControlMask, XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("loop+ 1      ")) },
+	{ MODKEY|ShiftMask,             XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("position     ")) },
+	{ MODKEY|ShiftMask,             XK_equal,        spawn,          SHCMD_SIG("1", PLAYER("quit-wl      ")) },
+	{ MODKEY,                       XK_v,            spawn,          SHCMD("clipmenu -l 50") },
+	{ MODKEY|MODKEY2,               XK_m,            spawn,          SHCMD("st Music.sh") },
+	{ MODKEY|MODKEY2,               XK_h,            spawn,          SHCMD("st htop") },
+	{ MODKEY|MODKEY2,               XK_g,            spawn,          SHCMD("gsimplecal") },
+	{ MODKEY|MODKEY2,               XK_s,            spawn,          SHCMD("firefox") },
+	{ MODKEY|MODKEY2,               XK_a,            spawn,          SHCMD("firefox -P") },
+	{ MODKEY|MODKEY2,               XK_d,            spawn,          SHCMD("firefox -P 1Private") },
+	{ MODKEY|MODKEY2|ControlMask,   XK_a,            spawn,          SHCMD("firefox -P --private-window") },
+	{ MODKEY,                       XK_Print,        spawn,          SHCMD("PrintScreen.sh") },
+	{ MODKEY|ShiftMask,             XK_Print,        spawn,          SHCMD("PrintScreen.sh window") },
+	{ MODKEY|ControlMask,           XK_p,            spawn,          SHCMD("xfce4-appfinder") },
+	{ MODKEY|ControlMask,           XK_c,            spawn,          SHCMD("xcalib -o 1 -i -a") },
 };
 
 /* button definitions */

@@ -1681,10 +1681,8 @@ setlayoutnobar(const Arg *arg)
 	if (selmon->showbar)
 		setlayout(arg);
 	else
-		setlayout(&(Arg) {0});
-	/* important: togglebar doesn't care
-	   about arg value */
-	togglebar(arg);
+		setlayout(NULL);
+	togglebar(NULL);
 }
 
 void setcfact(const Arg *arg) {
