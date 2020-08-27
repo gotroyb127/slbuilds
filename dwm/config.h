@@ -144,7 +144,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Return,       spawn,          {.v = termcmd } },
 	{ MODKEY|MODKEY2,               XK_c,            spawn,          SHCMD("st tmux new $SHELL -ic lf") },
 	{ MODKEY|ControlMask,           XK_Return,       spawn,          SHCMD("tmux has 2> /dev/null && st tmux attach") },
-	{ MODKEY|MODKEY2,               XK_F4,           spawn,          SHCMD("PowerOptions.sh") },
+	{ MODKEY|MODKEY2,               XK_F4,           spawn,          SHCMD("PowerOptions") },
 	{ MODKEY2,                      XK_Shift_L,      spawn,          SHCMD_SIG("2", ":") },
 	{ MODKEY2,                      XK_Shift_R,      spawn,          SHCMD_SIG("2", ":") },
 	{ MODKEY,                       XK_Home,         spawn,          SHCMD_SIG("5", ":") },
@@ -159,6 +159,18 @@ static Key keys[] = {
 	{ MODKEY|ControlMask,           XK_F8,           spawn,          SHCMD_SIG("4", MIXER("Master 1%+    ")) },
 	{ MODKEY,                       XK_F8,           spawn,          SHCMD_SIG("4", MIXER("Master 5%+    ")) },
 	{ MODKEY|ShiftMask,             XK_F8,           spawn,          SHCMD_SIG("4", MIXER("Master 15%+   ")) },
+
+#include <X11/XF86keysym.h>
+	{ ShiftMask,        XF86XK_AudioLowerVolume,     spawn,          SHCMD_SIG("4", MIXER("Master 15%-   ")) },
+	{ 0,                XF86XK_AudioLowerVolume,     spawn,          SHCMD_SIG("4", MIXER("Master 5%-    ")) },
+	{ ControlMask,      XF86XK_AudioLowerVolume,     spawn,          SHCMD_SIG("4", MIXER("Master 1%-    ")) },
+	{ 0,                XF86XK_AudioMute,            spawn,          SHCMD_SIG("4", MIXER("Master toggle ")) },
+	{ ShiftMask,        XF86XK_AudioMute,            spawn,          SHCMD_SIG("4", MIXER("Master 70%    ")) },
+	{ ControlMask,      XF86XK_AudioMute,            spawn,          SHCMD_SIG("4", MIXER("Master 35%    ")) },
+	{ ControlMask,      XF86XK_AudioRaiseVolume,     spawn,          SHCMD_SIG("4", MIXER("Master 1%+    ")) },
+	{ 0,                XF86XK_AudioRaiseVolume,     spawn,          SHCMD_SIG("4", MIXER("Master 5%+    ")) },
+	{ ShiftMask,        XF86XK_AudioRaiseVolume,     spawn,          SHCMD_SIG("4", MIXER("Master 15%+   ")) },
+
 	{ MODKEY|ShiftMask,             XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("previous     ")) },
 	{ MODKEY|ControlMask,           XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 60 ")) },
 	{ MODKEY,                       XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 5  ")) },
@@ -186,8 +198,8 @@ static Key keys[] = {
 	{ MODKEY|MODKEY2,               XK_a,            spawn,          SHCMD("firefox -P") },
 	{ MODKEY|MODKEY2,               XK_d,            spawn,          SHCMD("firefox -P 1Private") },
 	{ MODKEY|MODKEY2|ControlMask,   XK_a,            spawn,          SHCMD("firefox -P --private-window") },
-	{ MODKEY,                       XK_Print,        spawn,          SHCMD("PrintScreen.sh") },
-	{ MODKEY|ShiftMask,             XK_Print,        spawn,          SHCMD("PrintScreen.sh window") },
+	{ MODKEY,                       XK_Print,        spawn,          SHCMD("PrintScreen") },
+	{ MODKEY|ShiftMask,             XK_Print,        spawn,          SHCMD("PrintScreen window") },
 	{ MODKEY|ControlMask,           XK_p,            spawn,          SHCMD("xfce4-appfinder") },
 	{ MODKEY|ControlMask,           XK_c,            spawn,          SHCMD("xcalib -o 1 -i -a") },
 };
