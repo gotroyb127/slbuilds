@@ -5,10 +5,10 @@
 
 static const Blk blks[] = {
     /*    before    command                                       after  period    signal */
-        { "",       "~/.local/scripts/statusblocks/player.sh",    "",    1,             1},
-        { "    ",   "~/.local/scripts/statusblocks/volume.sh",    "",    10,            4},
-        { "",       "~/.local/scripts/statusblocks/kblayout.sh",  "",    10,            2},
-        { "  ",     "~/.local/scripts/statusblocks/battery.sh",   "",    10,            2},
-        { " ",      "~/.local/scripts/statusblocks/network.sh",   "",    10,            5},
-        { "    ",   "~/.local/scripts/statusblocks/date.sh",      "",    1,             0},
+        { "",       "STATUS_player",    "",    1,             1},
+        { "    ",   "STATUS_volume",    "",    10,            4},
+        { "",       "STATUS_kblayout",  "",    10,            2},
+        { "  ",     "STATUS_battery",   "",    10,            2},
+        { " ",      "STATUS_network",   "",    10,            5},
+        { "    ",   "STATUS_date",      "",    1,             0},
 };
