@@ -46,10 +46,9 @@ static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] 
 static const int dirs[3]     = { DirHor, DirVer, DirVer }; /* tiling dirs */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
-static const float scalefactorx = 0.45, scalefactory = 0.0; /* for centeredmonocle
-	useful when positive
-	they control the scaling between mfact and the gaps in the centered modes
-	1 means linearly by mfact, 0.5 sqrt, 0.333 cubic root ... */
+                                     /* for centeredmonocle: */
+static const float scalefactorx = 0.70, /* width  = (mon_w) * (mfact ^ scalefactorx) */
+                   scalefactory = 0.0;  /* height = (mon_h) * (mfact ^ scalefactory) */
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
@@ -73,7 +72,7 @@ static const Layout layouts[] = {
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)        { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
-#define SHCMD_SIG(N, cmd) SHCMD(cmd" && killall -$((31-"N")) -r '^sblocks'")
+#define SHCMD_SIG(N, cmd) SHCMD(cmd" && pkill -$((31-"N")) '^sblocks'")
 #define MIXER(args) "amixer -Mq set "args
 #define PLAYER(args) "Player.sh "args
 
@@ -119,8 +118,8 @@ static Key keys[] = {
 	{ MODKEY|ControlMask,           XK_f,            togglefullscr,  {0} },
 	{ MODKEY|ShiftMask,             XK_space,        togglefloating, {0} },
 	TILEKEYS(MODKEY,                                                 1, 0, 0)
-	TILEKEYS(MODKEY|ShiftMask,                                       0, 1, 0)
-	TILEKEYS(MODKEY|ControlMask,                                     0, 0, 1)
+	TILEKEYS(MODKEY|ControlMask,                                     0, 1, 0)
+	TILEKEYS(MODKEY|ShiftMask,                                       0, 0, 1)
 	TILEKEYS(MODKEY|ShiftMask|ControlMask,                           1, 1, 1)
 	{ MODKEY,                       XK_0,            view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,            tag,            {.ui = ~0 } },
@@ -171,14 +170,16 @@ static Key keys[] = {
 	{ 0,                XF86XK_AudioRaiseVolume,     spawn,          SHCMD_SIG("4", MIXER("Master 5%+    ")) },
 	{ ShiftMask,        XF86XK_AudioRaiseVolume,     spawn,          SHCMD_SIG("4", MIXER("Master 15%+   ")) },
 
-	{ MODKEY|ShiftMask,             XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("previous     ")) },
-	{ MODKEY|ControlMask,           XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 60 ")) },
-	{ MODKEY,                       XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 5  ")) },
-	{ MODKEY,                       XK_F10,          spawn,          SHCMD_SIG("1", PLAYER("play-pause   ")) },
 	{ MODKEY|ControlMask,           XK_F10,          spawn,          SHCMD_SIG("1", PLAYER("pause-after 1")) },
+	{ MODKEY|ShiftMask|ControlMask, XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("previous     ")) },
+	{ MODKEY|ShiftMask,             XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 60 ")) },
+	{ MODKEY,                       XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 5  ")) },
+	{ MODKEY|ControlMask,           XK_F9,           spawn,          SHCMD_SIG("1", PLAYER("position- 1  ")) },
+	{ MODKEY,                       XK_F10,          spawn,          SHCMD_SIG("1", PLAYER("play-pause   ")) },
+	{ MODKEY|ControlMask,           XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("position+ 1  ")) },
 	{ MODKEY,                       XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("position+ 5  ")) },
-	{ MODKEY|ControlMask,           XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("position+ 60 ")) },
-	{ MODKEY|ShiftMask,             XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("next         ")) },
+	{ MODKEY|ShiftMask,             XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("position+ 60 ")) },
+	{ MODKEY|ShiftMask|ControlMask, XK_F11,          spawn,          SHCMD_SIG("1", PLAYER("next         ")) },
 	{ MODKEY|ControlMask,           XK_bracketleft,  spawn,          SHCMD_SIG("1", PLAYER("speed- 0.01  ")) },
 	{ MODKEY|ShiftMask,             XK_bracketleft,  spawn,          SHCMD_SIG("1", PLAYER("speed- 0.05  ")) },
 	{ MODKEY,                       XK_bracketleft,  spawn,          SHCMD_SIG("1", PLAYER("speed- 0.1   ")) },

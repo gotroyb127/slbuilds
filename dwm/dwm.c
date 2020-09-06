@@ -541,9 +541,9 @@ centeredmaster(Monitor *m)
 void
 centeredmonocle(Monitor *m)
 {
-	unsigned int n = 0;
+	unsigned int n = 0, x, y, w, h;
+	float fx, fy;
 	Client *c;
-	Monitor sm = *m;
 
 	for (c = m->clients; c; c = c->next)
 		if (ISVISIBLE(c))
@@ -551,13 +551,15 @@ centeredmonocle(Monitor *m)
 	if (n > 0) /* override layout symbol */
 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "<%d>", n);
 
-	sm.wx += sm.ww * ((1 - pow(sm.mfact, scalefactorx)) / 2);
-	sm.wy += sm.wh * ((1 - pow(sm.mfact, scalefactory)) / 2);
+	fx = pow(m->mfact, scalefactorx);
+	fy = pow(m->mfact, scalefactory);
+	w = m->ww * fx;
+	h = m->wh * fy;
+	x = m->wx + m->ww * ((1 - fx) / 2);
+	y = m->wy + m->wh * ((1 - fy) / 2);
 
-	sm.ww *= pow(sm.mfact, scalefactorx);
-	sm.wh *= pow(sm.mfact, scalefactory);
-
-	monocle(&sm);
+	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
+		resize(c, x, y, w - (2*c->bw), h - (2*c->bw), 0);
 }
 
 void
@@ -1086,7 +1088,12 @@ grabkeys(void)
 void
 incnmaster(const Arg *arg)
 {
-	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(selmon->nmaster + arg->i, 0);
+	int n;
+	Client *c;
+	for (n = 0, c = nexttiled(selmon->clients); c; c = nexttiled(c->next))
+		n++;
+	
+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MIN(MAX(selmon->nmaster + arg->i, 0), n);
 	arrange(selmon);
 }
 
@@ -2455,7 +2462,7 @@ main(int argc, char *argv[])
 #endif /* __OpenBSD__ */
 	scan();
 	run();
-	if(restart) execvp(argv[0], argv);
+	if (restart) execvp(argv[0], argv);
 	cleanup();
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
