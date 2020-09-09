@@ -5,10 +5,10 @@ static const unsigned int borderpx  = 3;        /* border pixel of windows */
 static const unsigned int snap      = 15;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Fira Code Medium:size=9" };
-static const char dmenufont[]       = "Fira Code Medium:size=9";
-//static const char *fonts[]          = { "Fira Code Medium:size=10" };
-//static const char dmenufont[]       = "Fira Code Medium:size=10";
+static const char *fonts[]          = { "Fira Code Medium:size=10" };
+static const char dmenufont[]       = "Fira Code Medium:size=10";
+//static const char *fonts[]          = { "Fira Code Medium:size=9" };
+//static const char dmenufont[]       = "Fira Code Medium:size=9";
 static const char col_gray0[]       = "#000000";
 static const char col_gray1[]       = "#111111";
 static const char col_gray2[]       = "#444444";
@@ -102,6 +102,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask|ControlMask, XK_h,            setcfact,       {.f = -0.25} },
 	{ MODKEY|ShiftMask|ControlMask, XK_l,            setcfact,       {.f = +0.25} },
 	{ MODKEY|ShiftMask,             XK_o,            setcfact,       {.f =  0.0} },
+	{ MODKEY,                       XK_z,            zoom,           {0} },
 	{ MODKEY|ShiftMask,             XK_Return,       zoom,           {0} },
 	{ MODKEY,                       XK_Tab,          view,           {0} },
 	{ MODKEY,                       XK_q,            killclient,     {0} },
@@ -189,7 +190,7 @@ static Key keys[] = {
 	{ MODKEY|ControlMask,           XK_bracketright, spawn,          SHCMD_SIG("1", PLAYER("speed+ 0.01  ")) },
 	{ MODKEY,                       XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("loop- 1      ")) },
 	{ MODKEY|ShiftMask|ControlMask, XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("loop+ 1      ")) },
-	{ MODKEY|ShiftMask,             XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("position     ")) },
+	{ MODKEY|ShiftMask,             XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("positionm    ")) },
 	{ MODKEY|ShiftMask,             XK_equal,        spawn,          SHCMD_SIG("1", PLAYER("quit-wl      ")) },
 	{ MODKEY,                       XK_v,            spawn,          SHCMD("clipmenu -l 50") },
 	{ MODKEY|MODKEY2,               XK_m,            spawn,          SHCMD("st Music.sh") },

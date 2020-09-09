@@ -1382,30 +1382,49 @@ propertynotify(XEvent *e)
 }
 
 void
-pushdown(const Arg *arg) {
+pushdown(const Arg *arg)
+{
 	Client *sel = selmon->sel, *c;
 
-	if(!sel || sel->isfloating || sel == nexttiled(selmon->clients))
+	if (!sel || sel->isfloating)
 		return;
-	if((c = nexttiled(sel->next))) {
+	if ((c = nexttiled(sel->next))) {
+		/* attach after c */
 		detach(sel);
 		sel->next = c->next;
 		c->next = sel;
+	} else {
+		/* move to the front */
+		detach(sel);
+		attach(sel);
 	}
 	focus(sel);
 	arrange(selmon);
 }
 
 void
-pushup(const Arg *arg) {
-	Client *sel = selmon->sel, *c;
+pushup(const Arg *arg)
+{
+	Client *sel = selmon->sel;
+	Client *c;
 
-	if(!sel || sel->isfloating)
+	if (!sel || sel->isfloating)
 		return;
-	if((c = prevtiled(sel)) && c != nexttiled(selmon->clients)) {
+	if ((c = prevtiled(sel))) {
+		/* attach before c */
 		detach(sel);
 		sel->next = c;
-		for(c = selmon->clients; c->next != sel->next; c = c->next);
+		if (selmon->clients == c)
+			selmon->clients = sel;
+		else {
+			for (c = selmon->clients; c->next != sel->next; c = c->next);
+			c->next = sel;
+		}
+	} else {
+		/* move to the end */
+		for (c = sel; c->next; c = c->next);
+		detach(sel);
+		sel->next = NULL;
 		c->next = sel;
 	}
 	focus(sel);
