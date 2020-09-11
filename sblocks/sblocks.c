@@ -27,6 +27,8 @@ typedef struct {
 } Blk;
 
 /* function declarations */
+static void EchoRootName(void);
+static void OpenDisplay(void);
 static void (*Print) (void);
 static void Quit(int s);
 static void Run(void);
@@ -49,6 +51,7 @@ static int LastSignal = 0;
 static char OutStr[STSLEN];
 static int Restart = 0;
 static int Running = 1;
+static int T = -1;
 static struct timespec *next_ts = &(struct timespec) { 0, 0 };
 static struct timespec *curr_ts = &(struct timespec) { 0, 0 };
 static struct timespec *sleep_ts = &(struct timespec) { 0, 0 };
@@ -58,6 +61,24 @@ static Window root;
 static int screen;
 
 /* function implementations */
+void
+EchoRootName(void)
+{
+	StdoutPrint();
+}
+
+void
+OpenDisplay(void)
+{
+	    if (!(dpy = XOpenDisplay(NULL))) {
+		fprintf(stderr, "sblocks: cannot open display\n");
+		exit(1);
+	}
+
+	screen = DefaultScreen(dpy);
+	root = RootWindow(dpy, screen);
+}
+
 void
 Quit(int s)
 {
@@ -69,17 +90,13 @@ Quit(int s)
 void
 Run(void)
 {
-	int t = -1;
-
 	while (Running) {
+		T += 1;
 		clock_gettime(CLOCK, curr_ts);
 		*next_ts = (struct timespec) { curr_ts->tv_sec + SEC,
 		                               curr_ts->tv_nsec + NSEC };
-
-		if (UpdateAll(++t)) {
-			SetOutStr();
-			Print();
-		}
+		SetOutStr();
+		Print();
 		Sleep();
 	}
 }
@@ -88,6 +105,24 @@ void
 SetOutStr(void)
 {
 	int i, e;
+
+	if (Print == EchoRootName) {
+		char *name;
+
+		/* sleep so that xrootname gets updated */
+		if (LastSignal)
+			nanosleep(&(struct timespec) { 0, 1e7 }, NULL);
+
+		OpenDisplay();
+		XFetchName(dpy, root, &name);
+		XCloseDisplay(dpy);
+
+		strcpy(OutStr, name);
+		return;
+	}
+
+	if (!UpdateAll(T))
+		return;
 
 	for (i = e = 0; i < BLKN; ++i) {
 		e += sprintf(OutStr + e, "%s%s%s",
@@ -98,12 +133,7 @@ SetOutStr(void)
 void
 SetRoot(void)
 {
-	Display *d;
-
-	if ((d = XOpenDisplay(NULL)))
-		dpy = d;
-	screen = DefaultScreen(dpy);
-	root = RootWindow(dpy, screen);
+	OpenDisplay();
 	XStoreName(dpy, root, OutStr);
 	XCloseDisplay(dpy);
 }
@@ -143,9 +173,9 @@ Sleep()
 			if (blks[i].sig == LastSignal)
 				UpdateBlk(i);
 		}
-		LastSignal = 0;
 		SetOutStr();
 		Print();
+		LastSignal = 0;
 	}
 	clock_gettime(CLOCK, curr_ts);
 	ts_diff(next_ts, curr_ts, sleep_ts);
@@ -157,7 +187,8 @@ Sleep()
 void
 StdoutPrint(void)
 {
-	printf("%s\n", OutStr);
+	write(1, OutStr, strlen(OutStr));
+	write(1, "\n", 1);
 }
 
 void
@@ -203,12 +234,22 @@ UpdateBlk(int i)
 int
 main(int argc, char *argv[])
 {
-	if (argc > 1 && !strcmp(argv[1], "-o"))
-		Print = StdoutPrint;
-	else
-		Print = SetRoot;
+	Print = SetRoot;
+	if (argc > 1 && argv[1][0] == '-') {
+		switch (argv[1][1]) {
+		case 'o':
+			Print = StdoutPrint;
+			break;
+		case 'p':
+			Print = EchoRootName;
+			break;
+		}
+	}
+
 	SigSetup();
 	Run();
-	if (Restart) execvp(argv[0], argv);
+
+	if (Restart)
+		execvp(argv[0], argv);
 	return EXIT_SUCCESS;
 }
