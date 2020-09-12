@@ -142,6 +142,7 @@ static Key keys[] = {
 
 	{ MODKEY,                       XK_p,            spawn,          {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return,       spawn,          {.v = termcmd } },
+	{ MODKEY|MODKEY2,               XK_x,            spawn,          {.v = termcmd } },
 	{ MODKEY|MODKEY2,               XK_c,            spawn,          SHCMD("st tmux new $SHELL -ic lf") },
 	{ MODKEY|ControlMask,           XK_Return,       spawn,          SHCMD("tmux has 2> /dev/null && st tmux attach") },
 	{ MODKEY|MODKEY2,               XK_F4,           spawn,          SHCMD("PowerOptions") },
