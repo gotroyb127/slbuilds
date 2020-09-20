@@ -521,9 +521,15 @@ centeredmaster(Monitor *m)
 
 	if (i == 2 && m->nmaster < 2) {
 		tile(m);
-		snprintf(m->ltsymbol, sizeof m->ltsymbol, m->lt[m->sellt]->symbol);
+		/* output ltsymbol from tile(m) in "[%s]" format */
+		char symb[sizeof m->ltsymbol - 2];
+		snprintf(symb, sizeof m->ltsymbol, "%s", m->ltsymbol);
+		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%s]", symb);
 		return;
 	}
+	snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%c%c]",
+		(char[]){ '-', '|' }[ma->dir],
+		(char[]){ '-', '|' }[sal->dir]);
 
 	ma->x = m->ww * ( (1 - m->mfact) / 2) , ma->fx = m->ww * (1 + m->mfact) / 2;
 	ma->y = sal->y = sar->y = 0, ma->fy = sal->fy = sar->fy = m->wh;
