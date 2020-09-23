@@ -27,12 +27,13 @@ typedef struct {
 } Blk;
 
 /* function declarations */
+static void CmdsToStr(void);
 static void EchoRootName(void);
 static void OpenDisplay(void);
 static void (*Print) (void);
 static void Quit(int s);
 static void Run(void);
-static void SetOutStr(void);
+static void (*SetOutStr) (void);
 static void SetRoot(void);
 static void SigHan(int s);
 static void SigSetup(void);
@@ -47,8 +48,8 @@ static void UpdateBlk(int i);
 
 /* variables */
 static char blkstr[BLKN][BLKLEN];
-static int LastSignal = 0;
 static char OutStr[STSLEN];
+static int LastSignal = 0;
 static int Restart = 0;
 static int Running = 1;
 static int T = -1;
@@ -62,15 +63,39 @@ static int screen;
 
 /* function implementations */
 void
+CmdsToStr(void)
+{
+	int i, e;
+
+	if (!UpdateAll(T))
+		return;
+
+	for (i = e = 0; i < BLKN; ++i) {
+		e += sprintf(OutStr + e, "%s%s%s",
+		     blks[i].strBefore, blkstr[i], blks[i].strAfter);
+	}
+}
+
+void
 EchoRootName(void)
 {
-	StdoutPrint();
+	char *name;
+
+	/* sleep so that xrootname gets updated */
+	if (LastSignal)
+		nanosleep(&(struct timespec) { 0, 1e8 }, NULL);
+
+	OpenDisplay();
+	XFetchName(dpy, root, &name);
+	XCloseDisplay(dpy);
+
+	strcpy(OutStr, name);
 }
 
 void
 OpenDisplay(void)
 {
-	    if (!(dpy = XOpenDisplay(NULL))) {
+	if (!(dpy = XOpenDisplay(NULL))) {
 		fprintf(stderr, "sblocks: cannot open display\n");
 		exit(1);
 	}
@@ -98,35 +123,6 @@ Run(void)
 		SetOutStr();
 		Print();
 		Sleep();
-	}
-}
-
-void
-SetOutStr(void)
-{
-	int i, e;
-
-	if (Print == EchoRootName) {
-		char *name;
-
-		/* sleep so that xrootname gets updated */
-		if (LastSignal)
-			nanosleep(&(struct timespec) { 0, 1e7 }, NULL);
-
-		OpenDisplay();
-		XFetchName(dpy, root, &name);
-		XCloseDisplay(dpy);
-
-		strcpy(OutStr, name);
-		return;
-	}
-
-	if (!UpdateAll(T))
-		return;
-
-	for (i = e = 0; i < BLKN; ++i) {
-		e += sprintf(OutStr + e, "%s%s%s",
-		     blks[i].strBefore, blkstr[i], blks[i].strAfter);
 	}
 }
 
@@ -235,13 +231,14 @@ int
 main(int argc, char *argv[])
 {
 	Print = SetRoot;
+	SetOutStr = CmdsToStr;
 	if (argc > 1 && argv[1][0] == '-') {
 		switch (argv[1][1]) {
+		case 'p':
+			SetOutStr = EchoRootName;
+		/* fallthrough */
 		case 'o':
 			Print = StdoutPrint;
-			break;
-		case 'p':
-			Print = EchoRootName;
 			break;
 		}
 	}

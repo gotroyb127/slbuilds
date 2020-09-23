@@ -72,7 +72,7 @@ static const Layout layouts[] = {
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)        { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
-#define SHCMD_SIG(N,cmd)  SHCMD(cmd" && pkill -$((31-"N")) '^sblocks'")
+#define SHCMD_SIG(N,cmd)  SHCMD(cmd" && kill -$((31-"N")) $(pidof sblocks)")
 #define MIXER(args)       "amixer -Mq set "args
 #define PLAYER(args)      "Player.sh "args
 
@@ -144,10 +144,11 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask|ControlMask, XK_e,            quit,           {1} },
 
 	{ MODKEY,                       XK_p,            spawn,          {.v = dmenucmd } },
-	{ MODKEY,                       XK_Return,       spawn,          {.v = termcmd } },
 	{ MODKEY|MODKEY2,               XK_x,            spawn,          {.v = termcmd } },
-	{ MODKEY|MODKEY2,               XK_c,            spawn,          SHCMD("st tmux new $SHELL -ic lf") },
+	{ MODKEY,                       XK_Return,       spawn,          {.v = termcmd } },
 	{ MODKEY|ControlMask,           XK_Return,       spawn,          SHCMD("tmux has 2> /dev/null && st tmux attach") },
+	{ MODKEY|MODKEY2|ControlMask,   XK_x,            spawn,          SHCMD("tmux has 2> /dev/null && st tmux attach") },
+	{ MODKEY|MODKEY2,               XK_c,            spawn,          SHCMD("st tmux new $SHELL -ic lf") },
 	{ MODKEY|MODKEY2,               XK_F4,           spawn,          SHCMD("PowerOptions") },
 	{ MODKEY2,                      XK_Shift_L,      spawn,          SHCMD_SIG("2", ":") },
 	{ MODKEY2,                      XK_Shift_R,      spawn,          SHCMD_SIG("2", ":") },
