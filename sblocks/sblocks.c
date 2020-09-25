@@ -1,22 +1,24 @@
+#include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
 #include <X11/Xlib.h>
 
 /* macros */
+#define BLKLEN     256
+#define BLKN       LENGTH(blks)
 #define CLOCK      CLOCK_MONOTONIC
+#define LENGTH(X)  (sizeof X / sizeof X[0])
+#define FROMSIG(X) (31 - (X))
+#define TOSIG(X)   (31 - (X))
 #define SEC        1
 #define NSEC       0
-#define LENGTH(X)  (sizeof X / sizeof X[0])
-#define TOSIG(X)   (31 - (X))
-#define FROMSIG(X) (31 - (X))
 #define SIGMAX     31
-#define BLKLEN     256
 #define STSLEN     512
-#define BLKN       LENGTH(blks)
 
 typedef struct {
 	char *strBefore;
@@ -27,11 +29,12 @@ typedef struct {
 } Blk;
 
 /* function declarations */
+static void CloseFifo(void);
 static void CmdsToStr(void);
-static void EchoRootName(void);
+static void OnQuit(int s);
 static void OpenDisplay(void);
+static void OpenFifo(void);
 static void (*Print) (void);
-static void Quit(int s);
 static void Run(void);
 static void (*SetOutStr) (void);
 static void SetRoot(void);
@@ -42,6 +45,7 @@ static void StdoutPrint(void);
 static void ts_diff(const struct timespec *A, const struct timespec *B, struct timespec *t);
 static int UpdateAll(int t);
 static void UpdateBlk(int i);
+static void UpdateFifo(void);
 
 /* include configuration file before variable declerations */
 #include "config.h"
@@ -49,10 +53,13 @@ static void UpdateBlk(int i);
 /* variables */
 static char blkstr[BLKN][BLKLEN];
 static char OutStr[STSLEN];
-static int LastSignal = 0;
+static int fifofd;
+static char *fifo = "/tmp/sblocks.fifo";
+static int T = -1;
 static int Restart = 0;
 static int Running = 1;
-static int T = -1;
+static int UsingFifo = 0;
+static int LastSignal = 0;
 static struct timespec *next_ts = &(struct timespec) { 0, 0 };
 static struct timespec *curr_ts = &(struct timespec) { 0, 0 };
 static struct timespec *sleep_ts = &(struct timespec) { 0, 0 };
@@ -62,6 +69,16 @@ static Window root;
 static int screen;
 
 /* function implementations */
+void
+CloseFifo(void)
+{
+	if (UsingFifo) {
+		close(fifofd);
+		unlink(fifo);
+	}
+	UsingFifo = 0;
+}
+
 void
 CmdsToStr(void)
 {
@@ -77,19 +94,13 @@ CmdsToStr(void)
 }
 
 void
-EchoRootName(void)
+OnQuit(int s)
 {
-	char *name;
-
-	/* sleep so that xrootname gets updated */
-	if (LastSignal)
-		nanosleep(&(struct timespec) { 0, 1e8 }, NULL);
-
-	OpenDisplay();
-	XFetchName(dpy, root, &name);
-	XCloseDisplay(dpy);
-
-	strcpy(OutStr, name);
+	Running = 0;
+	if (s == SIGHUP) /* restart */
+		Restart = 1;
+	if (UsingFifo)
+		CloseFifo();
 }
 
 void
@@ -105,11 +116,23 @@ OpenDisplay(void)
 }
 
 void
-Quit(int s)
+OpenFifo(void)
 {
-	Running = 0;
-	if (s == SIGHUP)
-		Restart = 1;
+	struct stat st;
+
+	if (Print == SetRoot) {
+		if (stat(fifo, &st) == 0)
+			unlink(fifo);
+		if (mkfifo(fifo, 0600) != 0) {
+			perror("mkfifo");
+			return;
+		}
+		if ((fifofd = open(fifo, O_WRONLY)) == -1) {
+			perror("open");
+			return;
+		}
+	}
+	UsingFifo = 1;
 }
 
 void
@@ -132,12 +155,22 @@ SetRoot(void)
 	OpenDisplay();
 	XStoreName(dpy, root, OutStr);
 	XCloseDisplay(dpy);
+	UpdateFifo();
 }
 
 void
 SigHan(int s)
 {
-	LastSignal = FROMSIG(s);
+	switch (s) {
+	case SIGUSR1:
+		OpenFifo();
+		break;
+	case SIGPIPE:
+		CloseFifo();
+		break;
+	default:
+		LastSignal = FROMSIG(s);
+	}
 }
 
 void
@@ -145,12 +178,15 @@ SigSetup(void)
 {
 	int i, s;
 
-	for (i = 1; i < SIGMAX; ++i)
+	for (i = 16; i < SIGMAX; ++i)
 		signal(i, SIG_IGN);
 
-	signal(SIGINT, Quit);
-	signal(SIGTERM, Quit);
-	signal(SIGHUP, Quit);
+	signal(SIGINT, OnQuit);
+	signal(SIGTERM, OnQuit);
+	signal(SIGHUP, OnQuit);
+
+	signal(SIGUSR1, SigHan);
+	signal(SIGPIPE, SigHan);
 
 	for (i = 0; i < BLKN; ++i) {
 		s = TOSIG(blks[i].sig);
@@ -173,6 +209,7 @@ Sleep()
 		Print();
 		LastSignal = 0;
 	}
+
 	clock_gettime(CLOCK, curr_ts);
 	ts_diff(next_ts, curr_ts, sleep_ts);
 /*	fprintf(stderr, "%ld.%09ld\n", sleep_ts->tv_sec, sleep_ts->tv_nsec); */
@@ -227,26 +264,40 @@ UpdateBlk(int i)
 	pclose(cmdout);
 }
 
+void
+UpdateFifo(void)
+{
+	if (!UsingFifo)
+		return;
+	write(fifofd, OutStr, strlen(OutStr));
+	write(fifofd, "\n", 1);
+}
+
 int
 main(int argc, char *argv[])
 {
 	Print = SetRoot;
 	SetOutStr = CmdsToStr;
-	if (argc > 1 && argv[1][0] == '-') {
-		switch (argv[1][1]) {
-		case 'p':
-			SetOutStr = EchoRootName;
-		/* fallthrough */
-		case 'o':
-			Print = StdoutPrint;
-			break;
+	if (argc > 1) {
+		if (argv[1][0] == '-') {
+			switch (argv[1][1]) {
+			case 'o':
+				Print = StdoutPrint;
+				break;
+			}
+		} else {
+			fifo = argv[1];
 		}
 	}
+	if (argc > 2)
+		fifo = argv[2];
 
 	SigSetup();
 	Run();
 
 	if (Restart)
 		execvp(argv[0], argv);
+	OnQuit(SIGTERM);
+
 	return EXIT_SUCCESS;
 }
