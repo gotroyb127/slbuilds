@@ -758,7 +758,7 @@ createmon(void)
 		m->pertag->nmasters[i] = m->nmaster;
 		m->pertag->mfacts[i] = m->mfact;
 
-		for(j = 0; j < 3; j++) {
+		for (j = 0; j < 3; j++) {
 			m->pertag->areas[i][j].dir = MIN(dirs[j], ((int[]){ 3, 1, 1 }[j]));
 		}
 
@@ -1344,8 +1344,8 @@ Client *
 prevtiled(Client *c) {
 	Client *p, *r;
 
-	for(p = selmon->clients, r = NULL; p && p != c; p = p->next)
-		if(!p->isfloating && ISVISIBLE(p))
+	for (p = selmon->clients, r = NULL; p && p != c; p = p->next)
+		if (!p->isfloating && ISVISIBLE(p))
 			r = p;
 	return r;
 }
@@ -1440,7 +1440,7 @@ pushup(const Arg *arg)
 void
 quit(const Arg *arg)
 {
-	if(arg->i) restart = 1;
+	if (arg->i) restart = 1;
 	running = 0;
 }
 
@@ -1636,7 +1636,7 @@ setdirs(const Arg *arg) {
 	int *dirs = (int *)arg->v, i, n;
 	Area *areas = selmon->pertag->areas[selmon->pertag->curtag];
 
-	for(i = 0; i < 3; i++) {
+	for (i = 0; i < 3; i++) {
 		n = (int[]){ 4, 2, 2 }[i];
 		areas[i].dir = ISINC(dirs[i]) ?
 			MOD((int)areas[i].dir + GETINC(dirs[i]), n) : TRUNC(dirs[i], 0, n - 1);
@@ -1719,18 +1719,18 @@ setlayoutnobar(const Arg *arg)
 	togglebar(NULL);
 }
 
-void setcfact(const Arg *arg) {
+void
+setcfact(const Arg *arg)
+{
 	float f;
-	Client *c;
+	Client *c = selmon->sel;
 
-	c = selmon->sel;
-
-	if(!arg || !c || !selmon->lt[selmon->sellt]->arrange)
+	if (!arg || !c || !selmon->lt[selmon->sellt]->arrange)
 		return;
 	f = arg->f + c->cfact;
-	if(arg->f == 0.0)
+	if (arg->f == 0.0)
 		f = 1.0;
-	else if(f < 0.25 || f > 5.0)
+	else if (f < 0.25 || f > 5.0)
 		return;
 	c->cfact = f;
 	arrange(selmon);
