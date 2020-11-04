@@ -222,6 +222,8 @@ static Button buttons[] = {
 	{ ClkLtSymbol,          0,                Button5,        setlayout,      {.v = &layouts[4]} },
 	{ ClkLtSymbol,          0,                      9,        setlayout,      {.v = &layouts[2]} },
 	{ ClkLtSymbol,          0,                      8,        setlayout,      {.v = &layouts[4]} },
+	{ ClkRootWin,           0,                Button4,        togglebar,      {0} },
+	{ ClkRootWin,           0,                Button5,        togglebar,      {0} },
 	{ ClkWinTitle,          0,                Button2,        setmfact,       {.f = 1.5} },
 	{ ClkWinTitle,          0,                Button4,        setmfact,       {.f = +0.05} },
 	{ ClkWinTitle,          0,                Button5,        setmfact,       {.f = -0.05} },
