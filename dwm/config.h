@@ -197,6 +197,8 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("positionm    ")) },
 	{ MODKEY|ShiftMask,             XK_equal,        spawn,          SHCMD_SIG("1", PLAYER("quit-wl      ")) },
 	{ MODKEY,                       XK_v,            spawn,          SHCMD("clipsavedshow -l 20") },
+	{ MODKEY|MODKEY2,               XK_v,            spawn,          SHCMD("clipsavedshow --rm -l 20") },
+	{ MODKEY|MODKEY2,               XK_f,            spawn,          SHCMD("gepasl ~/Documents/havsepas dmenu -i -l 20"), },
 	{ MODKEY|MODKEY2,               XK_m,            spawn,          SHCMD("st Music.sh") },
 	{ MODKEY|MODKEY2,               XK_h,            spawn,          SHCMD("st htop") },
 	{ MODKEY|MODKEY2,               XK_g,            spawn,          SHCMD("gsimplecal") },

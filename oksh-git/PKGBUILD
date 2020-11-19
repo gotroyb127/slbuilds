@@ -1,7 +1,7 @@
 #
 
 pkgname=oksh-git
-pkgver=6.7
+pkgver=6.8.1
 pkgrel=1
 url="https://github.com/ibara/oksh/"
 pkgdesc="Ported version of ksh from OpenBSD installed as ksh"
@@ -12,14 +12,13 @@ conflicts=('ksh' 'pdksh')
 arch=('i686' 'x86_64')
 source=(
   "git+https://github.com/ibara/oksh.git"
-  'https://gist.githubusercontent.com/gotroyb127/ff7a3936527e1c394bf94fbb4c766873/raw/2be5e7b52a02eb7c3fa0dc93c54eb5cf010f5fe8/oksh_vicursor.diff'
+  'https://gist.githubusercontent.com/gotroyb127/ff7a3936527e1c394bf94fbb4c766873/raw/dd65edcc456e5afb9128add339e022c05918622e/oksh_vicursor.diff'
 )
 md5sums=('SKIP' 'SKIP')
 
 prepare() {
   cd "$srcdir/${pkgname%-git}"
   patch -p1 < ../oksh_vicursor.diff
-  sed -i 's/oksh\.1/ksh\.1/g' configure
 }
 
 build() {
