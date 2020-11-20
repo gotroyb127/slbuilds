@@ -522,9 +522,9 @@ centeredmaster(Monitor *m)
 	if (i == 2 && m->nmaster < 2) {
 		tile(m);
 		/* output ltsymbol from tile(m) in "[%s]" format */
-		char symb[sizeof m->ltsymbol - 2];
+		char symb[sizeof m->ltsymbol];
 		snprintf(symb, sizeof m->ltsymbol, "%s", m->ltsymbol);
-		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%s]", symb);
+		snprintf(m->ltsymbol, (sizeof m->ltsymbol)-2, "[%s]", symb);
 		return;
 	}
 	snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%c%c]",
@@ -538,7 +538,7 @@ centeredmaster(Monitor *m)
 	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
 		if (i < m->nmaster)
 			tileclient(m, ma, c);
-		else if ( (i - m->nmaster) % 2)
+		else if ((i - m->nmaster) % 2)
 			tileclient(m, sal, c);
 		else
 			tileclient(m, sar, c);
