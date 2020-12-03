@@ -502,7 +502,7 @@ buttonpress(XEvent *e)
 void
 centeredmaster(Monitor *m)
 {
-	unsigned int i;
+	unsigned int i, updatesymb;
 	Client *c;
 	Area *ma = m->pertag->areas[m->pertag->curtag] + 1,
 	     *sal = ma + 1, tmp = *sal, *sar = &tmp;
@@ -519,12 +519,18 @@ centeredmaster(Monitor *m)
 			sar->fact += c->cfact;
 	}
 
-	if (i == 2 && m->nmaster < 2) {
+	updatesymb = 1;
+	if (i == 1) {
+		centeredmonocle(m);
+	} else if (i == 2 && m->nmaster < 2) {
 		tile(m);
-		/* output ltsymbol from tile(m) in "[%s]" format */
-		char symb[sizeof m->ltsymbol];
-		snprintf(symb, sizeof m->ltsymbol, "%s", m->ltsymbol);
-		snprintf(m->ltsymbol, (sizeof m->ltsymbol)-2, "[%s]", symb);
+	} else
+		updatesymb = 0;
+	if (updatesymb) {
+		/* output ltsymbol in "[%s]" format */
+		char symb[sizeof m->ltsymbol - 2];
+		strncpy(symb, m->ltsymbol, sizeof symb);
+		snprintf(m->ltsymbol, sizeof symb + 2, "[%s]", symb);
 		return;
 	}
 	snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%c%c]",
@@ -1688,7 +1694,7 @@ setfullscreen(Client *c, int fullscreen)
 		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)&netatom[NetWMFullscreen], 1);
 		c->isfullscreen = 1;
-	} else if (!fullscreen && c->isfullscreen){
+	} else if (!fullscreen && c->isfullscreen) {
 		XChangeProperty(dpy, c->win, netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)0, 0);
 		c->isfullscreen = 0;

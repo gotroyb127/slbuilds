@@ -18,7 +18,7 @@ ${EXE}: ${OBJ}
 
 
 clean:
-	rm -f *.o *.gch ${EXE}
+	rm -f *.o ${EXE}
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
