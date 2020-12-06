@@ -4,11 +4,11 @@
  */
 
 static const Blk blks[] = {
-    /*    before    command             after  period    signal */
-        { "",        "STATUS_player",   "",    1,        1},
-        { "   ",     "STATUS_volume",   "",    10,       4},
-        { "",        "STATUS_kblayout", "",    2,        2},
-        { " ",       "STATUS_battery",  "",    10,       2},
-        { " ",       "STATUS_network",  "",    10,       5},
-        { "   ",     "STATUS_date",     "",    1,        0},
+	/* before   command             after  period    signal */
+	{  "",      "STATUS_player",    "",    1,        1},
+	{  "   ",   "STATUS_volume",    "",    10,       4},
+	{  "",      "STATUS_kblayout",  "",    2,        2},
+	{  " ",     "STATUS_battery",   "",    10,       2},
+	{  " ",     "STATUS_network",   "",    10,       5},
+	{  "   ",   "STATUS_date",      "",    1,        0},
 };
