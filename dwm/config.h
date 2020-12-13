@@ -43,20 +43,22 @@ static const Rule rules[] = {
 
 /* layout(s) */
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
-static const int dirs[3]     = { DirHor, DirVer, DirVer }; /* tiling dirs */
+static const int dirs[3]     = { DirRotHor, DirVer, DirVer }; /* tiling dirs */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
                                      /* for centeredmonocle: */
 static const float scalefactorx = 0.70, /* width  = (mon_w) * (mfact ^ scalefactorx) */
                    scalefactory = 0.0;  /* height = (mon_h) * (mfact ^ scalefactory) */
 
+enum { CenteredMaster, Tiled, Monocle, CenteredMonocle, Floating }; /* layouts by name */
+
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "<||",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
+	{ "[||]",     centeredmaster },    /* first entry is default */
+	{ ">||",      tile },
 	{ "[M]",      monocle },
 	{ "<M>",      centeredmonocle },
-	{ "<||>",     centeredmaster },
+	{ "><>",      NULL },    /* no layout function means floating behavior */
 };
 
 /* key definitions */
@@ -106,13 +108,13 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Tab,          view,           {0} },
 	{ MODKEY,                       XK_q,            killclient,     {0} },
 	{ MODKEY,                       XK_space,        setlayout,      {0} },
-	{ MODKEY,                       XK_x,            setlayout,      {.v = &layouts[0]} },
-	{ MODKEY|ShiftMask|ControlMask, XK_f,            setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_m,            setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_n,            setlayout,      {.v = &layouts[3]} },
-	{ MODKEY,                       XK_c,            setlayout,      {.v = &layouts[4]} },
-	{ MODKEY,                       XK_f,            setlayoutnobar, {.v = &layouts[2]} },
-	{ MODKEY|ShiftMask,             XK_f,            setlayoutnobar, {.v = &layouts[3]} },
+	{ MODKEY,                       XK_x,            setlayout,      {.v = &layouts[Tiled]} },
+	{ MODKEY|ShiftMask|ControlMask, XK_f,            setlayout,      {.v = &layouts[Floating]} },
+	{ MODKEY,                       XK_m,            setlayout,      {.v = &layouts[Monocle]} },
+	{ MODKEY,                       XK_n,            setlayout,      {.v = &layouts[CenteredMonocle]} },
+	{ MODKEY,                       XK_c,            setlayout,      {.v = &layouts[CenteredMaster]} },
+	{ MODKEY,                       XK_f,            setlayoutnobar, {.v = &layouts[Monocle]} },
+	{ MODKEY|ShiftMask,             XK_f,            setlayoutnobar, {.v = &layouts[CenteredMonocle]} },
 	TILEKEYS(MODKEY,                       XK_r,                     1, 0, 0)
 	TILEKEYS(MODKEY|ControlMask,           XK_r,                     0, 1, 0)
 	TILEKEYS(MODKEY|ShiftMask,             XK_r,                     0, 0, 1)
@@ -217,13 +219,13 @@ static Key keys[] = {
 static Button buttons[] = {
 	/* click                event mask        button          function        argument */
 	{ ClkLtSymbol,          MODKEY,           Button1,        setlayout,      {0} },
-	{ ClkLtSymbol,          0,                Button1,        setlayout,      {.v = &layouts[0]} },
-	{ ClkLtSymbol,          0,                Button2,        setlayout,      {.v = &layouts[1]} },
-	{ ClkLtSymbol,          0,                Button3,        setlayout,      {.v = &layouts[3]} },
-	{ ClkLtSymbol,          0,                Button4,        setlayout,      {.v = &layouts[2]} },
-	{ ClkLtSymbol,          0,                Button5,        setlayout,      {.v = &layouts[4]} },
-	{ ClkLtSymbol,          0,                      9,        setlayout,      {.v = &layouts[2]} },
-	{ ClkLtSymbol,          0,                      8,        setlayout,      {.v = &layouts[4]} },
+	{ ClkLtSymbol,          0,                Button1,        setlayout,      {.v = &layouts[Tiled]} },
+	{ ClkLtSymbol,          0,                Button2,        setlayout,      {.v = &layouts[Floating]} },
+	{ ClkLtSymbol,          0,                Button3,        setlayout,      {.v = &layouts[CenteredMonocle]} },
+	{ ClkLtSymbol,          0,                Button4,        setlayout,      {.v = &layouts[Monocle]} },
+	{ ClkLtSymbol,          0,                Button5,        setlayout,      {.v = &layouts[CenteredMaster]} },
+	{ ClkLtSymbol,          0,                      9,        setlayout,      {.v = &layouts[Monocle]} },
+	{ ClkLtSymbol,          0,                      8,        setlayout,      {.v = &layouts[CenteredMaster]} },
 	{ ClkRootWin,           0,                Button4,        togglebar,      {0} },
 	{ ClkRootWin,           0,                Button5,        togglebar,      {0} },
 	{ ClkWinTitle,          0,                Button2,        setmfact,       {.f = 1.5} },

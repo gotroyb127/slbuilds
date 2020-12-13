@@ -522,7 +522,7 @@ centeredmaster(Monitor *m)
 	updatesymb = 1;
 	if (i == 1) {
 		centeredmonocle(m);
-	} else if (i == 2 && m->nmaster < 2) {
+	} else if (i == m->nmaster + 1) {
 		tile(m);
 	} else
 		updatesymb = 0;
