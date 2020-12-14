@@ -1104,8 +1104,8 @@ incnmaster(const Arg *arg)
 	Client *c;
 	for (n = 0, c = nexttiled(selmon->clients); c; c = nexttiled(c->next))
 		n++;
-	
-	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MIN(MAX(selmon->nmaster + arg->i, 0), n);
+	selmon->nmaster = MIN(selmon->nmaster, n);
+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(selmon->nmaster + arg->i, 0);
 	arrange(selmon);
 }
 
