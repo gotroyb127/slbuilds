@@ -524,8 +524,9 @@ centeredmaster(Monitor *m)
 		centeredmonocle(m);
 	} else if (i == m->nmaster + 1) {
 		tile(m);
-	} else
+	} else {
 		updatesymb = 0;
+	}
 	if (updatesymb) {
 		/* output ltsymbol in "[%s]" format */
 		char symb[sizeof m->ltsymbol - 2];
@@ -1104,8 +1105,9 @@ incnmaster(const Arg *arg)
 	Client *c;
 	for (n = 0, c = nexttiled(selmon->clients); c; c = nexttiled(c->next))
 		n++;
-	selmon->nmaster = MIN(selmon->nmaster, n);
-	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MAX(selmon->nmaster + arg->i, 0);
+	selmon->nmaster = TRUNC(selmon->nmaster, 0, n);
+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag]
+		= TRUNC(selmon->nmaster + arg->i, 0, n);
 	arrange(selmon);
 }
 
@@ -1446,7 +1448,8 @@ pushup(const Arg *arg)
 void
 quit(const Arg *arg)
 {
-	if (arg->i) restart = 1;
+	if (arg->i)
+		restart = 1;
 	running = 0;
 }
 
@@ -1482,9 +1485,9 @@ resizeclient(Client *c, int x, int y, int w, int h)
 	c->oldh = c->h; c->h = wc.height = h;
 	wc.border_width = c->bw;
 	if (((nexttiled(c->mon->clients) == c && !nexttiled(c->next))
-	    || &monocle         == c->mon->lt[c->mon->sellt]->arrange
-	    || &centeredmonocle == c->mon->lt[c->mon->sellt]->arrange)
-	    && !c->isfloating) {
+	|| &monocle         == c->mon->lt[c->mon->sellt]->arrange
+	|| &centeredmonocle == c->mon->lt[c->mon->sellt]->arrange)
+	&& !c->isfloating) {
 		c->w = wc.width += c->bw * 2;
 		c->h = wc.height += c->bw * 2;
 		wc.border_width = 0;
@@ -2053,7 +2056,7 @@ toggleview(const Arg *arg)
 		/* test if the user did not select the same tag */
 		if (!(newtagset & 1 << (selmon->pertag->curtag - 1))) {
 			selmon->pertag->prevtag = selmon->pertag->curtag;
-			for (i = 0; !(newtagset & 1 << i); i++) ;
+			for (i = 0; !(newtagset & 1 << i); i++);
 			selmon->pertag->curtag = i + 1;
 		}
 
@@ -2371,10 +2374,10 @@ view(const Arg *arg)
 		selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
 		selmon->pertag->prevtag = selmon->pertag->curtag;
 
-		if (arg->ui == ~0)
+		if (arg->ui == ~0) {
 			selmon->pertag->curtag = 0;
-		else {
-			for (i = 0; !(arg->ui & 1 << i); ++i) ;
+		} else {
+			for (i = 0; !(arg->ui & 1 << i); ++i);
 			selmon->pertag->curtag = i + 1;
 		}
 	} else {
@@ -2493,7 +2496,8 @@ main(int argc, char *argv[])
 #endif /* __OpenBSD__ */
 	scan();
 	run();
-	if (restart) execvp(argv[0], argv);
+	if (restart)
+		execvp(argv[0], argv);
 	cleanup();
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;

@@ -195,7 +195,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_bracketright, spawn,          SHCMD_SIG("1", PLAYER("speed+ 0.05  ")) },
 	{ MODKEY|ControlMask,           XK_bracketright, spawn,          SHCMD_SIG("1", PLAYER("speed+ 0.01  ")) },
 	{ MODKEY,                       XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("loop- 1      ")) },
-	{ MODKEY|ShiftMask|ControlMask, XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("loop+ 1      ")) },
+	{ MODKEY|ControlMask,           XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("loop+ 1      ")) },
 	{ MODKEY|ShiftMask,             XK_minus,        spawn,          SHCMD_SIG("1", PLAYER("positionm    ")) },
 	{ MODKEY|ShiftMask,             XK_equal,        spawn,          SHCMD_SIG("1", PLAYER("quit-wl      ")) },
 	{ MODKEY,                       XK_v,            spawn,          SHCMD("clipsavedshow -l 20") },
