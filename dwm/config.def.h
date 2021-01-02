@@ -31,9 +31,9 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+	/* class      instance    title       tags mask     isfloating  add2borderw   monitor */
+	{ "Gimp",     NULL,       NULL,       0,            1,          0,            -1 },
+	{ "Firefox",  NULL,       NULL,       1 << 8,       0,          0,            -1 },
 };
 
 /* layout(s) */
@@ -41,9 +41,8 @@ static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] 
 static const int dirs[3]     = { DirHor, DirVer, DirVer }; /* tiling dirs */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
-static const float scalefactorx = 0.3, scalefactory = 0.05; /* usefull when positive
-	they control the scaling between mfact and the gaps in the centered modes
-	1 means linearly by mfact, 0.5 sqrt, 0.333 cubic root ... */
+static const float scalefactorx = 0.7,   /* width  = (mon_w) * (mfact ^ scalefactorx) */
+                   scalefactory = 0.05;  /* height = (mon_h) * (mfact ^ scalefactory) */
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */

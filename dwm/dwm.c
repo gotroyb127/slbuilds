@@ -154,6 +154,7 @@ typedef struct {
 	const char *title;
 	unsigned int tags;
 	int isfloating;
+	int add2borderw;
 	int monitor;
 } Rule;
 
@@ -339,6 +340,7 @@ applyrules(Client *c)
 		{
 			c->isfloating = r->isfloating;
 			c->tags |= r->tags;
+			c->bw += r->add2borderw;
 			for (m = mons; m && m->num != r->monitor; m = m->next);
 			if (m)
 				c->mon = m;
@@ -1173,6 +1175,8 @@ manage(Window w, XWindowAttributes *wa)
 	c->cfact = 1.0;
 
 	updatetitle(c);
+	/* set c->bw before applying rules */
+	c->bw = borderpx;
 	if (XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
 		c->mon = t->mon;
 		c->tags = t->tags;
@@ -1189,7 +1193,6 @@ manage(Window w, XWindowAttributes *wa)
 	/* only fix client y-offset, if the client center might cover the bar */
 	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
 		&& (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
-	c->bw = borderpx;
 
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
