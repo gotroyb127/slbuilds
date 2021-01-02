@@ -6,9 +6,6 @@ static const unsigned int snap      = 15;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
 static const char *fonts[]          = { "Fira Code Medium:size=10" };
-static const char dmenufont[]       = "Fira Code Medium:size=10";
-//static const char *fonts[]          = { "Fira Code Medium:size=9" };
-//static const char dmenufont[]       = "Fira Code Medium:size=9";
 static const char col_gray0[]       = "#000000";
 static const char col_gray1[]       = "#111111";
 static const char col_gray2[]       = "#444444";
@@ -46,18 +43,18 @@ static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] 
 static const int dirs[3]     = { DirRotHor, DirVer, DirVer }; /* tiling dirs */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
-                                     /* for centeredmonocle: */
+                                     /* for smallmonocle: */
 static const float scalefactorx = 0.70, /* width  = (mon_w) * (mfact ^ scalefactorx) */
                    scalefactory = 0.0;  /* height = (mon_h) * (mfact ^ scalefactory) */
 
-enum { CenteredMaster, Tiled, Monocle, CenteredMonocle, Floating }; /* layouts by name */
+enum { Tiled, CenteredMaster, Monocle, SmallMonocle, Floating }; /* layouts by name */
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[||]",     centeredmaster },    /* first entry is default */
-	{ ">||",      tile },
+	{ "<||>",     tile },    /* first entry is default */
+	{ "[||]",     centeredmaster },
 	{ "[M]",      monocle },
-	{ "<M>",      centeredmonocle },
+	{ "<M>",      smallmonocle },
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 };
 
@@ -74,13 +71,13 @@ static const Layout layouts[] = {
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)        { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
-#define SHCMD_SIG(N,cmd)  SHCMD(cmd" && kill -$((31-"N")) $(pidof sblocks)")
-#define MIXER(args)       "amixer -Mq set "args
-#define PLAYER(args)      "Player.sh "args
+#define SHCMD_SIG(N,cmd)  SHCMD(cmd " && kill -$((31-"N")) $(pidof sblocks)")
+#define MIXER(args)       "amixer -Mq set " args
+#define PLAYER(args)      "Player.sh " args
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-p", " ", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray0, "-nf", "#888888", "-sb", col_gray0, "-sf", col_gray5, NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, NULL };
 static const char *termcmd[]  = { "st", "tmux", NULL };
 
 static Key keys[] = {
@@ -111,10 +108,10 @@ static Key keys[] = {
 	{ MODKEY,                       XK_x,            setlayout,      {.v = &layouts[Tiled]} },
 	{ MODKEY|ShiftMask|ControlMask, XK_f,            setlayout,      {.v = &layouts[Floating]} },
 	{ MODKEY,                       XK_m,            setlayout,      {.v = &layouts[Monocle]} },
-	{ MODKEY,                       XK_n,            setlayout,      {.v = &layouts[CenteredMonocle]} },
+	{ MODKEY,                       XK_n,            setlayout,      {.v = &layouts[SmallMonocle]} },
 	{ MODKEY,                       XK_c,            setlayout,      {.v = &layouts[CenteredMaster]} },
 	{ MODKEY,                       XK_f,            setlayoutnobar, {.v = &layouts[Monocle]} },
-	{ MODKEY|ShiftMask,             XK_f,            setlayoutnobar, {.v = &layouts[CenteredMonocle]} },
+	{ MODKEY|ShiftMask,             XK_f,            setlayoutnobar, {.v = &layouts[SmallMonocle]} },
 	TILEKEYS(MODKEY,                       XK_r,                     1, 0, 0)
 	TILEKEYS(MODKEY|ControlMask,           XK_r,                     0, 1, 0)
 	TILEKEYS(MODKEY|ShiftMask,             XK_r,                     0, 0, 1)
@@ -221,7 +218,7 @@ static Button buttons[] = {
 	{ ClkLtSymbol,          MODKEY,           Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,                Button1,        setlayout,      {.v = &layouts[Tiled]} },
 	{ ClkLtSymbol,          0,                Button2,        setlayout,      {.v = &layouts[Floating]} },
-	{ ClkLtSymbol,          0,                Button3,        setlayout,      {.v = &layouts[CenteredMonocle]} },
+	{ ClkLtSymbol,          0,                Button3,        setlayout,      {.v = &layouts[SmallMonocle]} },
 	{ ClkLtSymbol,          0,                Button4,        setlayout,      {.v = &layouts[Monocle]} },
 	{ ClkLtSymbol,          0,                Button5,        setlayout,      {.v = &layouts[CenteredMaster]} },
 	{ ClkLtSymbol,          0,                      9,        setlayout,      {.v = &layouts[Monocle]} },

@@ -166,7 +166,6 @@ static void arrangemon(Monitor *m);
 static void attach(Client *c);
 static void attachstack(Client *c);
 static void buttonpress(XEvent *e);
-static void centeredmonocle(Monitor *m);
 static void centeredmaster(Monitor *m);
 static void checkotherwm(void);
 static void cleanup(void);
@@ -196,6 +195,7 @@ static void grabkeys(void);
 static void incnmaster(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
+static void ltsymbf(Monitor *m , const char *fmt);
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
@@ -232,6 +232,7 @@ static void showhide(Client *c);
 static void sigchld(int unused);
 static void sighup(int unused);
 static void sigterm(int unused);
+static void smallmonocle(Monitor *m);
 static void spawn(const Arg *arg);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
@@ -523,7 +524,7 @@ centeredmaster(Monitor *m)
 
 	updatesymb = 1;
 	if (i == 1) {
-		centeredmonocle(m);
+		smallmonocle(m);
 	} else if (i == m->nmaster + 1) {
 		tile(m);
 	} else {
@@ -531,9 +532,7 @@ centeredmaster(Monitor *m)
 	}
 	if (updatesymb) {
 		/* output ltsymbol in "[%s]" format */
-		char symb[sizeof m->ltsymbol - 2];
-		strncpy(symb, m->ltsymbol, sizeof symb);
-		snprintf(m->ltsymbol, sizeof symb + 2, "[%s]", symb);
+		ltsymbf(m, "[%s]");
 		return;
 	}
 	snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%c%c]",
@@ -551,30 +550,6 @@ centeredmaster(Monitor *m)
 			tileclient(m, sal, c);
 		else
 			tileclient(m, sar, c);
-}
-
-void
-centeredmonocle(Monitor *m)
-{
-	unsigned int n = 0, x, y, w, h;
-	float fx, fy;
-	Client *c;
-
-	for (c = m->clients; c; c = c->next)
-		if (ISVISIBLE(c))
-			n++;
-	if (n > 0) /* override layout symbol */
-		snprintf(m->ltsymbol, sizeof m->ltsymbol, "<%d>", n);
-
-	fx = pow(m->mfact, scalefactorx);
-	fy = pow(m->mfact, scalefactory);
-	w = m->ww * fx;
-	h = m->wh * fy;
-	x = m->wx + m->ww * ((1 - fx) / 2);
-	y = m->wy + m->wh * ((1 - fy) / 2);
-
-	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
-		resize(c, x, y, w - (2*c->bw), h - (2*c->bw), 0);
 }
 
 void
@@ -1158,6 +1133,15 @@ killclient(const Arg *arg)
 }
 
 void
+ltsymbf(Monitor *m, const char *fmt)
+{
+	char symb[sizeof m->ltsymbol - 2];
+
+	strncpy(symb, m->ltsymbol, sizeof symb);
+	snprintf(m->ltsymbol, sizeof symb + 2, fmt, symb);
+}
+
+void
 manage(Window w, XWindowAttributes *wa)
 {
 	Client *c, *t = NULL;
@@ -1488,8 +1472,8 @@ resizeclient(Client *c, int x, int y, int w, int h)
 	c->oldh = c->h; c->h = wc.height = h;
 	wc.border_width = c->bw;
 	if (((nexttiled(c->mon->clients) == c && !nexttiled(c->next))
-	|| &monocle         == c->mon->lt[c->mon->sellt]->arrange
-	|| &centeredmonocle == c->mon->lt[c->mon->sellt]->arrange)
+	|| &monocle      == c->mon->lt[c->mon->sellt]->arrange
+	|| &smallmonocle == c->mon->lt[c->mon->sellt]->arrange)
 	&& !c->isfloating) {
 		c->w = wc.width += c->bw * 2;
 		c->h = wc.height += c->bw * 2;
@@ -1891,6 +1875,30 @@ sigterm(int unused)
 }
 
 void
+smallmonocle(Monitor *m)
+{
+	unsigned int n = 0, x, y, w, h;
+	float fx, fy;
+	Client *c;
+
+	for (c = m->clients; c; c = c->next)
+		if (ISVISIBLE(c))
+			n++;
+	if (n > 0) /* override layout symbol */
+		snprintf(m->ltsymbol, sizeof m->ltsymbol, "<%d>", n);
+
+	fx = pow(m->mfact, scalefactorx);
+	fy = pow(m->mfact, scalefactory);
+	w = m->ww * fx;
+	h = m->wh * fy;
+	x = m->wx + m->ww * ((1 - fx) / 2);
+	y = m->wy + m->wh * ((1 - fy) / 2);
+
+	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
+		resize(c, x, y, w - (2*c->bw), h - (2*c->bw), 0);
+}
+
+void
 spawn(const Arg *arg)
 {
 	if (arg->v == dmenucmd)
@@ -1946,6 +1954,11 @@ tile(Monitor *m)
 	}
 	if (n == 0)
 		return;
+	if (n == 1) {
+		smallmonocle(m);
+		ltsymbf(m, "'%s'");
+		return;
+	}
 
 	ma_n = MIN(n, m->nmaster), sa_n = n - ma_n;
 	/* calculate area rectangles */
