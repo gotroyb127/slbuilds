@@ -1960,25 +1960,27 @@ tile(Monitor *m)
 		return;
 	}
 
-	ma_n = MIN(n, m->nmaster), sa_n = n - ma_n;
+	ma_n = MIN(n, m->nmaster);
+	sa_n = n - ma_n;
 	/* calculate area rectangles */
 	f = ma_n == 0 ? 0 : (sa_n == 0 ? 1 : m->mfact);
-	if (ga->dir == DirHor || ga->dir == DirRotHor)
-		ms = f * m->ww, ss = m->ww - ms,
-		ma->x = ga->dir == DirHor ? 0 : ss, ma->y = 0, ma->fx = ma->x + ms, ma->fy = m->wh,
-		sa->x = ga->dir == DirHor ? ms : 0, sa->y = 0, sa->fx = sa->x + ss, sa->fy = m->wh;
-	else
-		ms = f * m->wh, ss = m->wh - ms,
-		ma->x = 0, ma->y = ga->dir == DirVer ? 0 : ss, ma->fx = m->ww, ma->fy = ma->y + ms,
-		sa->x = 0, sa->y = ga->dir == DirVer ? ms : 0, sa->fx = m->ww, sa->fy = sa->y + ss;
+	if (ga->dir == DirHor || ga->dir == DirRotHor) {
+		ms = f * m->ww; ss = m->ww - ms;
+		ma->x = ga->dir == DirHor ? 0 : ss; ma->y = 0; ma->fx = ma->x + ms; ma->fy = m->wh;
+		sa->x = ga->dir == DirHor ? ms : 0; sa->y = 0; sa->fx = sa->x + ss; sa->fy = m->wh;
+	} else {
+		ms = f * m->wh; ss = m->wh - ms;
+		ma->x = 0; ma->y = ga->dir == DirVer ? 0 : ss; ma->fx = m->ww; ma->fy = ma->y + ms;
+		sa->x = 0; sa->y = ga->dir == DirVer ? ms : 0; sa->fx = m->ww; sa->fy = sa->y + ss;
+	}
 	/* tile clients */
 	ma->cx = ma->cy = sa->cx = sa->cy = 0;
-	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
 		if (i < ma_n)
 			tileclient(m, ma, c);
 		else
 			tileclient(m, sa, c);
-
+	}
 }
 
 void
