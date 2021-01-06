@@ -16,14 +16,14 @@ static const char col_SelCl[]       = "#a9a9a9"; /* Selected Client */
 static const char col_SelTag[]      = "#333333"; /* Selected Tag */
 static const char col_cyan[]        = "#005577";
 static const char *colors[][3]      = {
-	/*                  fg         bg          border   */
-	[SchemeNorm]    = { col_gray0, col_gray1,  col_gray2 }, /* only border affects(?) */
-	[SchemeSel]     = { col_gray0, col_SelCl,  col_SelCl }, /* only border affects(?) */
-	[SchemeStatus]  = { "#cccccc", col_gray0,  col_gray0 }, // Statusbar right            {text,background,not used but cannot be empty}
-	[SchemeTagsSel] = { col_gray4, col_gray0,  col_gray0 }, // Tagbar left selected       {text,background,not used but cannot be empty}
-       [SchemeTagsNorm] = { col_gray3, col_gray0,  col_gray0 }, // Tagbar left unselected     {text,background,not used but cannot be empty}
-       [SchemeInfoSel]  = { col_gray5, col_gray0,  col_gray0 }, // infobar middle selected    {text,background,not used but cannot be empty}
-       [SchemeInfoNorm] = { col_gray3, col_gray0,  col_gray0 }, // infobar middle  unselected {text,background,not used but cannot be empty}
+	/*                  fg         bg         border   */
+	[SchemeNorm]    = { col_gray0, col_gray1, col_gray2 }, /* only border affects(?) */
+	[SchemeSel]     = { col_gray0, col_SelCl, col_SelCl }, /* only border affects(?) */
+	[SchemeStatus]  = { "#cccccc", col_gray0, col_gray0 }, // Statusbar right            {text,background,not used but cannot be empty}
+	[SchemeTagsSel] = { col_gray4, col_gray0, col_gray0 }, // Tagbar left selected       {text,background,not used but cannot be empty}
+       [SchemeTagsNorm] = { col_gray3, col_gray0, col_gray0 }, // Tagbar left unselected     {text,background,not used but cannot be empty}
+       [SchemeInfoSel]  = { col_gray5, col_gray0, col_gray0 }, // infobar middle selected    {text,background,not used but cannot be empty}
+       [SchemeInfoNorm] = { col_gray3, col_gray0, col_gray0 }, // infobar middle  unselected {text,background,not used but cannot be empty}
 };
 
 /* tagging */
@@ -34,8 +34,9 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class      instance    title       tags mask     isfloating  add2borderw   monitor */
-	{ "DDNet",    NULL,       NULL,       0,            0,          -borderpx,    -1 },
+	/* class      instance    title       tags mask  isfloating  add2borderw  monitor */
+	{ "teeworlds", NULL,      NULL,       0,         0,          -borderpx,   -1 },
+	{ "DDNet",    NULL,       NULL,       0,         0,          -borderpx,   -1 },
 };
 
 /* layout(s) */
