@@ -5,14 +5,14 @@ static const unsigned int borderpx  = 3;        /* border pixel of windows */
 static const unsigned int snap      = 15;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 0;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Fira Code Medium:size=10" };
+static const char *fonts[]          = { "FiraCodeRetina:size=10" };
 static const char col_gray0[]       = "#000000";
 static const char col_gray1[]       = "#111111";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#999999";
 static const char col_gray4[]       = "#eeeeee";
 static const char col_gray5[]       = "#ffffff";
-static const char col_SelCl[]       = "eeeeeee"; /* Selected Client */
+static const char col_SelCl[]       = "#eeeeee"; /* Selected Client */
 static const char col_SelTag[]      = "#333333"; /* Selected Tag */
 static const char col_cyan[]        = "#005577";
 static const char *colors[][3]      = {
@@ -23,7 +23,7 @@ static const char *colors[][3]      = {
 	[SchemeTagsSel]  = { col_gray4, col_gray0, NULL      }, /* Tagbar left selected (border unused) */
 	[SchemeTagsNorm] = { col_gray3, col_gray0, NULL      }, /* Tagbar left unselected (border unused) */
 	[SchemeInfoSel]  = { col_gray5, col_gray0, NULL      }, /* infobar middle selected (border unused) */
-	[SchemeInfoNorm] = { col_gray3, col_gray0, NULL      }, /* infobar middle  unselected (border unused) */
+	[SchemeInfoNorm] = { col_gray4, col_gray0, NULL      }, /* infobar middle  unselected (border unused) */
 };
 
 /* tagging */
