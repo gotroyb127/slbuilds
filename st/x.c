@@ -59,6 +59,7 @@ static void selpaste(const Arg *);
 static void zoom(const Arg *);
 static void zoomabs(const Arg *);
 static void zoomreset(const Arg *);
+static void toggleligs(const Arg *);
 static void ttysend(const Arg *);
 
 /* config.h for applying patches and the configuration. */
@@ -322,6 +323,13 @@ zoomreset(const Arg *arg)
 		larg.f = defaultfontsize;
 		zoomabs(&larg);
 	}
+}
+
+void
+toggleligs(const Arg *arg)
+{
+	win.mode ^= MODE_HIDELIGS;
+	redraw();
 }
 
 void
@@ -1345,7 +1353,8 @@ xmakeglyphfontspecs(XftGlyphFontSpec *specs, const Glyph *glyphs, int len, int x
 	}
 
 	/* Harfbuzz transformation for ligatures. */
-	hbtransform(specs, glyphs, len, x, y);
+	if (!IS_SET(MODE_HIDELIGS))
+		hbtransform(specs, glyphs, len, x, y);
 
 	return numspecs;
 }

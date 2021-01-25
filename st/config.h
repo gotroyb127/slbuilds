@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "Fira Code Medium:pixelsize=15:antialias=true:autohint=true";
+static char *font = "FiraCode:pixelsize=15:antialias=true:autohint=true";
 static int borderpx = 2;
 
 /*
@@ -198,6 +198,7 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_L,           zoom,           {.f = +1} },
 	{ TERMMOD,              XK_H,           zoom,           {.f = -1} },
 	{ TERMMOD,              XK_O,           zoomreset,      {.f =  0} },
+	{ TERMMOD,              XK_G,           toggleligs,     {.f =  0} },
 };
 
 /*
