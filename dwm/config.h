@@ -12,18 +12,18 @@ static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#999999";
 static const char col_gray4[]       = "#eeeeee";
 static const char col_gray5[]       = "#ffffff";
-static const char col_SelCl[]       = "#a9a9a9"; /* Selected Client */
+static const char col_SelCl[]       = "eeeeeee"; /* Selected Client */
 static const char col_SelTag[]      = "#333333"; /* Selected Tag */
 static const char col_cyan[]        = "#005577";
 static const char *colors[][3]      = {
-	/*                  fg         bg         border   */
-	[SchemeNorm]    = { col_gray0, col_gray1, col_gray2 }, /* only border affects(?) */
-	[SchemeSel]     = { col_gray0, col_SelCl, col_SelCl }, /* only border affects(?) */
-	[SchemeStatus]  = { "#cccccc", col_gray0, col_gray0 }, // Statusbar right            {text,background,not used but cannot be empty}
-	[SchemeTagsSel] = { col_gray4, col_gray0, col_gray0 }, // Tagbar left selected       {text,background,not used but cannot be empty}
-       [SchemeTagsNorm] = { col_gray3, col_gray0, col_gray0 }, // Tagbar left unselected     {text,background,not used but cannot be empty}
-       [SchemeInfoSel]  = { col_gray5, col_gray0, col_gray0 }, // infobar middle selected    {text,background,not used but cannot be empty}
-       [SchemeInfoNorm] = { col_gray3, col_gray0, col_gray0 }, // infobar middle  unselected {text,background,not used but cannot be empty}
+	/*                   fg         bg         border   */
+	[SchemeNorm]     = { NULL,      NULL,      col_gray2 }, /* only border affects */
+	[SchemeSel]      = { NULL,      NULL,      col_SelCl }, /* only border affects */
+	[SchemeStatus]   = { "#cccccc", col_gray0, NULL      }, /* Statusbar right (border unused) */
+	[SchemeTagsSel]  = { col_gray4, col_gray0, NULL      }, /* Tagbar left selected (border unused) */
+	[SchemeTagsNorm] = { col_gray3, col_gray0, NULL      }, /* Tagbar left unselected (border unused) */
+	[SchemeInfoSel]  = { col_gray5, col_gray0, NULL      }, /* infobar middle selected (border unused) */
+	[SchemeInfoNorm] = { col_gray3, col_gray0, NULL      }, /* infobar middle  unselected (border unused) */
 };
 
 /* tagging */
@@ -44,7 +44,7 @@ static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] 
 static const int dirs[3]     = { DirRotHor, DirVer, DirVer }; /* tiling dirs */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
-                                     /* for smallmonocle: */
+                                        /* for smallmonocle: */
 static const float scalefactorx = 0.70, /* width  = (mon_w) * (mfact ^ scalefactorx) */
                    scalefactory = 0.0;  /* height = (mon_h) * (mfact ^ scalefactory) */
 
