@@ -102,6 +102,8 @@ static Key keys[] = {
 	TILEKEYS(MODKEY|ControlMask,                               0, 0, 1)
 	TILEKEYS(MODKEY|ShiftMask|ControlMask,                     1, 1, 1)
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
+	{ MODKEY|ControlMask,           XK_i,      toggleperm,     {0} },
+	{ MODKEY,                       XK_s,      togglesticky,   {0} },
 	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
 	{ MODKEY|ShiftMask,             XK_f,      setlayoutnobar, {.v = &layouts[2]} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
@@ -120,7 +122,7 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
-	{ MODKEY|ControlMask|ShiftMask, XK_q,      quit,           {1} }, 
+	{ MODKEY|ControlMask|ShiftMask, XK_q,      quit,           {1} },
 };
 
 /* button definitions */
