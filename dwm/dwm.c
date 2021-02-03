@@ -1241,8 +1241,10 @@ monocle(Monitor *m)
 			n++;
 	if (n > 0) /* override layout symbol */
 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
-	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
-		resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
+	for (c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
+		if (ISVISIBLE(c))
+			resize(c, m->wx, m->wy, m->ww - 2 * c->bw, m->wh - 2 * c->bw, 0);
+	}
 }
 
 void
@@ -1895,8 +1897,10 @@ smallmonocle(Monitor *m)
 	x = m->wx + m->ww * ((1 - fx) / 2);
 	y = m->wy + m->wh * ((1 - fy) / 2);
 
-	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
-		resize(c, x, y, w - (2*c->bw), h - (2*c->bw), 0);
+	for (c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
+		if (ISVISIBLE(c))
+			resize(c, x, y, w - (2*c->bw), h - (2*c->bw), 0);
+	}
 }
 
 void

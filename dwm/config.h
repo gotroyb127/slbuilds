@@ -208,7 +208,7 @@ static Key keys[] = {
 	{ MODKEY|MODKEY2,               XK_d,            spawn,          SHCMD("firefox -P 1Private") },
 	{ MODKEY|MODKEY2|ControlMask,   XK_a,            spawn,          SHCMD("firefox -P --private-window") },
 	{ MODKEY,                       XK_Print,        spawn,          SHCMD("PrintScreen") },
-	{ MODKEY|ShiftMask,             XK_Print,        spawn,          SHCMD("PrintScreen window") },
+	{ MODKEY|ControlMask,           XK_Print,        spawn,          SHCMD("PrintScreen -w") },
 	{ MODKEY|MODKEY2,               XK_p,            spawn,          SHCMD("xfce4-appfinder") },
 	{ MODKEY|ControlMask,           XK_c,            spawn,          SHCMD("xcalib -o 1 -i -a") },
 };
