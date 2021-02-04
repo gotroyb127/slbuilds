@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
@@ -19,6 +20,16 @@
 #define NSEC       0
 #define SIGMAX     31
 #define STSLEN     512
+
+#define eprintf(...) fprintf(stderr, __VA_ARGS__)
+#define esigaction(sig, act, oldact)\
+	do {\
+		if (sigaction(sig, act, oldact))\
+			eprintf("sblocks[%d]: sigaction: '%s' on signal %d\n",\
+			        __LINE__, strerror(errno), sig);\
+	} while (0)
+#define setsighandler(s, h)\
+	esigaction(s, &(struct sigaction) { .sa_handler = h }, NULL)
 
 typedef struct {
 	char *strBefore;
@@ -107,7 +118,7 @@ void
 OpenDisplay(void)
 {
 	if (!(dpy = XOpenDisplay(NULL))) {
-		fprintf(stderr, "sblocks: cannot open display\n");
+		eprintf("sblocks: cannot open display\n");
 		exit(1);
 	}
 
@@ -178,20 +189,22 @@ SigSetup(void)
 {
 	int i, s;
 
-	for (i = 16; i < SIGMAX; ++i)
-		signal(i, SIG_IGN);
+	for (s = 16; s <= SIGMAX; ++s) {
+		if (s != SIGSTOP)
+			setsighandler(s, SIG_IGN);
+	}
 
-	signal(SIGINT, OnQuit);
-	signal(SIGTERM, OnQuit);
-	signal(SIGHUP, OnQuit);
+	setsighandler(SIGINT, OnQuit);
+	setsighandler(SIGTERM, OnQuit);
+	setsighandler(SIGHUP, OnQuit);
 
-	signal(SIGUSR1, SigHan);
-	signal(SIGPIPE, SigHan);
+	setsighandler(SIGUSR1, SigHan);
+	setsighandler(SIGPIPE, SigHan);
 
 	for (i = 0; i < BLKN; ++i) {
 		s = TOSIG(blks[i].sig);
 		if (s != 0)
-			signal(s, SigHan);
+			setsighandler(s, SigHan);
 	}
 }
 
@@ -212,7 +225,7 @@ Sleep()
 
 	clock_gettime(CLOCK, curr_ts);
 	ts_diff(next_ts, curr_ts, sleep_ts);
-/*	fprintf(stderr, "%ld.%09ld\n", sleep_ts->tv_sec, sleep_ts->tv_nsec); */
+/*	eprintf("%ld.%09ld\n", sleep_ts->tv_sec, sleep_ts->tv_nsec); */
 	if (nanosleep(sleep_ts, NULL))
 		Sleep();
 }
@@ -234,7 +247,7 @@ ts_diff(const struct timespec *A, const struct timespec *B, struct timespec *t)
 	}
 	if (t->tv_sec < 0) {
 		t->tv_sec = 0;
-		t->tv_nsec = 1e3;
+		t->tv_nsec = 1e7;
 	}
 }
 

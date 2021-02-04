@@ -7,11 +7,11 @@ X11LIB = /usr/X11R6/lib
 PREFIX = /usr/local
 
 # includes and libs
-INCS = -I${X11INC} -I${FREETYPEINC}
+INCS = -I${X11INC}
 LIBS = -L${X11LIB} -lX11
 
 # flags
-CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L
+CPPFLAGS = -D_POSIX_C_SOURCE=200809L
 CFLAGS   = -std=c99 -pedantic -Wall -Wno-deprecated-declarations -Os ${INCS} ${CPPFLAGS}
 LDFLAGS  = ${LIBS}
 

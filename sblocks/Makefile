@@ -4,26 +4,25 @@ include config.mk
 
 SRC = sblocks.c
 OBJ = ${SRC:.c=.o}
-EXE = sblocks
+PROG = sblocks
 
-all: ${EXE}
+all: ${PROG}
 
 ${OBJ}: config.h
 
 .c.o:
 	${CC} -c ${CFLAGS} $<
 
-${EXE}: ${OBJ}
+${PROG}: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
 
-
 clean:
-	rm -f *.o ${EXE}
+	rm -f *.o ${PROG}
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
-	cp -f ${EXE} ${DESTDIR}${PREFIX}/bin
-	chmod 755 ${DESTDIR}${PREFIX}/bin/${EXE}
+	cp -f ${PROG} ${DESTDIR}${PREFIX}/bin
+	chmod 755 ${DESTDIR}${PREFIX}/bin/${PROG}
 
 uninstall:
-	rm -f ${DESTDIR}${PREFIX}/bin/${EXE}
+	rm -f ${DESTDIR}${PREFIX}/bin/${PROG}
