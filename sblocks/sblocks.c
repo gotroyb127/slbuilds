@@ -40,14 +40,13 @@ typedef struct {
 } Blk;
 
 /* function declarations */
+static void BlkstrToOutStr(void);
 static void CloseFifo(void);
-static void CmdsToStr(void);
 static void OnQuit(int s);
 static void OpenDisplay(void);
 static void OpenFifo(void);
-static void (*Print) (void);
+static void (*PrintOutStr) (void);
 static void Run(void);
-static void (*SetOutStr) (void);
 static void SetRoot(void);
 static void SigHan(int s);
 static void SigSetup(void);
@@ -81,6 +80,17 @@ static int screen;
 
 /* function implementations */
 void
+BlkstrToOutStr(void)
+{
+	int i, e;
+
+	for (i = e = 0; i < BLKN; ++i) {
+		e += sprintf(OutStr + e, "%s%s%s",
+		     blks[i].strBefore, blkstr[i], blks[i].strAfter);
+	}
+}
+
+void
 CloseFifo(void)
 {
 	if (UsingFifo) {
@@ -88,20 +98,6 @@ CloseFifo(void)
 		unlink(fifo);
 	}
 	UsingFifo = 0;
-}
-
-void
-CmdsToStr(void)
-{
-	int i, e;
-
-	if (!UpdateAll(T))
-		return;
-
-	for (i = e = 0; i < BLKN; ++i) {
-		e += sprintf(OutStr + e, "%s%s%s",
-		     blks[i].strBefore, blkstr[i], blks[i].strAfter);
-	}
 }
 
 void
@@ -131,17 +127,15 @@ OpenFifo(void)
 {
 	struct stat st;
 
-	if (Print == SetRoot) {
-		if (stat(fifo, &st) == 0)
-			unlink(fifo);
-		if (mkfifo(fifo, 0600) != 0) {
-			perror("mkfifo");
-			return;
-		}
-		if ((fifofd = open(fifo, O_WRONLY)) == -1) {
-			perror("open");
-			return;
-		}
+	if (stat(fifo, &st) == 0)
+		unlink(fifo);
+	if (mkfifo(fifo, 0600) != 0) {
+		perror("mkfifo");
+		return;
+	}
+	if ((fifofd = open(fifo, O_WRONLY)) == -1) {
+		perror("open");
+		return;
 	}
 	UsingFifo = 1;
 }
@@ -154,8 +148,10 @@ Run(void)
 		clock_gettime(CLOCK, curr_ts);
 		*next_ts = (struct timespec) { curr_ts->tv_sec + SEC,
 		                               curr_ts->tv_nsec + NSEC };
-		SetOutStr();
-		Print();
+		if (UpdateAll(T)) {
+			BlkstrToOutStr();
+			PrintOutStr();
+		}
 		Sleep();
 	}
 }
@@ -209,7 +205,7 @@ SigSetup(void)
 }
 
 void
-Sleep()
+Sleep(void)
 {
 	if (!Running)
 		return;
@@ -218,8 +214,8 @@ Sleep()
 			if (blks[i].sig == LastSignal)
 				UpdateBlk(i);
 		}
-		SetOutStr();
-		Print();
+		BlkstrToOutStr();
+		PrintOutStr();
 		LastSignal = 0;
 	}
 
@@ -254,16 +250,16 @@ ts_diff(const struct timespec *A, const struct timespec *B, struct timespec *t)
 int
 UpdateAll(int t)
 {
-	int i, per, U;
+	int i, per, u;
 
-	for (i = U = 0; i < BLKN; ++i) {
+	for (i = u = 0; i < BLKN; ++i) {
 		per = blks[i].period;
 		if ((per != 0 && t % per == 0) || t == 0) {
 			UpdateBlk(i);
-			U = 1;
+			u = 1;
 		}
 	}
-	return U;
+	return u;
 }
 
 void
@@ -272,7 +268,7 @@ UpdateBlk(int i)
 	FILE *cmdout;
 
 	cmdout = popen(blks[i].cmd, "r");
-	if (!fgets(blkstr[i], BLKLEN, cmdout))
+	if (!fgets(blkstr[i], BLKLEN, cmdout) && !LastSignal)
 		*blkstr[i] = '\0';
 	pclose(cmdout);
 }
@@ -289,13 +285,12 @@ UpdateFifo(void)
 int
 main(int argc, char *argv[])
 {
-	Print = SetRoot;
-	SetOutStr = CmdsToStr;
+	PrintOutStr = SetRoot;
 	if (argc > 1) {
 		if (argv[1][0] == '-') {
 			switch (argv[1][1]) {
 			case 'o':
-				Print = StdoutPrint;
+				PrintOutStr = StdoutPrint;
 				break;
 			}
 		} else {
