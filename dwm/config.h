@@ -28,6 +28,7 @@ static const char *colors[][3]      = {
 
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const char *vtags[] = { "A", "B" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -130,6 +131,10 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period,       focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,        tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period,       tagmon,         {.i = +1 } },
+	{ MODKEY|ControlMask,           XK_comma,        focusvtag,      {.i = INC(-1) } },
+	{ MODKEY|ControlMask,           XK_period,       focusvtag,      {.i = INC(+1) } },
+	{ MODKEY|ControlMask|ShiftMask, XK_comma,        vtag,           {.i = INC(-1) } },
+	{ MODKEY|ControlMask|ShiftMask, XK_period,       vtag,           {.i = INC(+1) } },
 	{ MODKEY,                       XK_0,            view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,            tag,            {.ui = ~0 } },
 	TAGKEYS(                        XK_1,                            0)
