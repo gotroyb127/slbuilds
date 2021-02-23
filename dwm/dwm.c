@@ -448,8 +448,10 @@ attach(Client *c)
 {
 	Client **tc = &c->mon->clients;
 
-	if (!c->isperm)
-		for (; *tc && (*tc)->isperm; tc = &(*tc)->next);
+	if (!c->isperm) {
+		while (*tc && (*tc)->isperm)
+			tc = &(*tc)->next;
+	}
 	c->next = *tc;
 	*tc = c;
 }
@@ -832,7 +834,7 @@ drawbar(Monitor *m)
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeTagsSel : SchemeTagsNorm]);
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
 		if (occ & 1 << i)
-			drw_rect(drw, x + 3 * boxs, -1, w - 6 * boxs, boxw - 1,
+			drw_rect(drw, x + 3*boxs, -1, w - 6*boxs, boxw - 1,
 				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
 				urg & 1 << i);
 		x += w;
@@ -1886,9 +1888,10 @@ smallmonocle(Monitor *m)
 	float fx, fy;
 	Client *c;
 
-	for (c = m->clients; c; c = c->next)
+	for (c = m->clients; c; c = c->next) {
 		if (ISVISIBLE(c))
 			n++;
+	}
 	if (n > 0) /* override layout symbol */
 		snprintf(m->ltsymbol, sizeof m->ltsymbol, "<%d>", n);
 
