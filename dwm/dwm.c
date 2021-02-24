@@ -887,9 +887,11 @@ drawbar(Monitor *m)
 			drw_setscheme(drw, scheme[m == selmon ? SchemeInfoSel : SchemeInfoNorm]);
 			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
 			if (m->sel->isfloating)
-				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
+				drw_rect(drw, x + boxs, 0, boxw, boxw, m->sel->isfixed, 0);
+			if (m->sel->isperm)
+				drw_rect(drw, x + boxs, (bh / 3) + 1, boxw, boxw, 1, 0);
 			if (m->sel->issticky)
-				drw_rect(drw, x + boxs, bh - boxw - boxs, boxw, boxw, 0, 0);
+				drw_rect(drw, x + boxs, 2*(bh / 3 + 1), boxw, boxw, 0, 0);
 		} else {
 			drw_setscheme(drw, scheme[SchemeInfoNorm]);
 			drw_rect(drw, x, 0, w, bh, 1, 1);
@@ -2115,6 +2117,7 @@ toggleperm(const Arg *arg)
 {
 	if (selmon->sel)
 		selmon->sel->isperm ^= 1;
+	drawbar(selmon);
 }
 
 void
