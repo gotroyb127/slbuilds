@@ -71,7 +71,7 @@ enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
        NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
-enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
+enum { ClkTagBar, ClkVTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 enum { DirHor, DirVer, DirRotHor, DirRotVer, DirLast }; /* tiling dirs */
 
@@ -321,7 +321,7 @@ struct Pertag {
 };
 
 struct Pervtag {
-	Pertag pertag[LENGTH(vtags)];
+	Pertag pertags[LENGTH(vtags)];
 	unsigned int tagsets[LENGTH(vtags)][2];
 	unsigned int seltags[LENGTH(vtags)];
 };
@@ -499,7 +499,9 @@ buttonpress(XEvent *e)
 		if (i < LENGTH(tags)) {
 			click = ClkTagBar;
 			arg.ui = 1 << i;
-		} else if (ev->x < x + blw)
+		} else if (ev->x < (x += TEXTW(vtags[selmon->selvtag])))
+			click = ClkVTagBar;
+		else if (ev->x < x + blw)
 			click = ClkLtSymbol;
 		else if (ev->x > selmon->ww - TEXTW(stext))
 			click = ClkStatusText;
@@ -754,12 +756,12 @@ createmon(void)
 	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
 
 	m->pervtag = ecalloc(1, sizeof(Pervtag));
-	m->pertag = &m->pervtag->pertag[m->selvtag];
+	m->pertag = &m->pervtag->pertags[m->selvtag];
 	m->tagset = m->pervtag->tagsets[m->selvtag];
 
 	for (k = 0; k < LENGTH(vtags); k++) {
 		pvtag = m->pervtag;
-		ptag = &pvtag->pertag[k];
+		ptag = &pvtag->pertags[k];
 
 		ptag->curtag = ptag->prevtag = 1;
 		pvtag->tagsets[k][0] = pvtag->tagsets[k][1] = 1;
@@ -1003,12 +1005,22 @@ focusvtag(const Arg *arg)
 	if (curr == selmon->selvtag)
 		return;
 
-	/* load saved settings */
-	selmon->pertag = &selmon->pervtag->pertag[selmon->selvtag];
+	/* load saved settings from pervtag */
+	selmon->pertag = &selmon->pervtag->pertags[selmon->selvtag];
 	selmon->tagset = selmon->pervtag->tagsets[selmon->selvtag];
-	selmon->seltags = selmon->pervtag->seltags[selmon->selvtag] ^ 1;
+	selmon->seltags = selmon->pervtag->seltags[selmon->selvtag];
 
-	view(&(const Arg){0});
+	/* load saved settings from pertag, same as in view() */
+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
+	selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
+	selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
+	selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
+	selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
+
+	if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag])
+		togglebar(NULL);
+	focus(NULL);
+	arrange(selmon);
 }
 
 void
